@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Stack Assessment — AI Mindset POS Sprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg-elevated: #161b22;
+    --bg-card: #1c2129;
+    --bg-hover: #21262d;
+    --border: #30363d;
+    --border-light: #21262d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --text-dim: #484f58;
+    --accent-teal: #4dc9d4;
+    --accent-blue: #58a6ff;
+    --accent-green: #3fb950;
+    --accent-amber: #d29922;
+    --accent-red: #f85149;
+    --accent-purple: #bc8cff;
+    --accent-orange: #f0883e;
+    --status-0: #21262d;
+    --status-1: #4a3520;
+    --status-2: #1a3352;
+    --status-3: #1a3524;
+    --status-4: #134034;
+    --dot-0: #484f58;
+    --dot-1: #d29922;
+    --dot-2: #58a6ff;
+    --dot-3: #3fb950;
+    --dot-4: #4dc9d4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  code, .mono { font-family: 'IBM Plex Mono', 'SF Mono', 'JetBrains Mono', monospace; }
+
+  /* Layout */
+  #app {
+    display: grid;
+    grid-template-columns: 260px 1fr 360px;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
+    gap: 0;
+  }
+
+  #header {
+    grid-column: 1 / -1;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-elevated);
+  }
+
+  #header h1 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  #header h1 span { color: var(--accent-teal); }
+
+  .header-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .score-badge {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .tier-badge {
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tier-none { background: var(--status-0); color: var(--text-dim); }
+  .tier-base { background: var(--status-3); color: var(--accent-green); border: 1px solid rgba(63,185,80,0.3); }
+  .tier-mid { background: var(--status-2); color: var(--accent-blue); border: 1px solid rgba(88,166,255,0.3); }
+  .tier-advanced { background: var(--status-4); color: var(--accent-teal); border: 1px solid rgba(77,201,212,0.3); }
+
+  /* Sidebar */
+  #sidebar {
+    grid-row: 2 / 4;
+    border-right: 1px solid var(--border);
+    background: var(--bg-elevated);
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  .sidebar-section {
+    margin-bottom: 20px;
+  }
+
+  .sidebar-section h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .preset-btn {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 4px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+  }
+
+  .preset-btn:hover { background: var(--bg-hover); border-color: var(--border); }
+  .preset-btn.active { border-color: var(--accent-teal); background: rgba(77,201,212,0.08); }
+
+  .preset-btn .preset-desc {
+    display: block;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* Legend */
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Layer score bars */
+  .layer-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 6px 8px;
+    margin: 0 -8px;
+    transition: background 0.15s;
+  }
+
+  .layer-score:hover { background: var(--bg-hover); }
+
+  .layer-score .layer-label {
+    width: 28px;
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  .layer-score .bar-track {
+    flex: 1;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .layer-score .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease, background 0.3s;
+  }
+
+  .layer-score .score-num {
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 24px;
+    text-align: right;
+  }
+
+  /* Main diagram area */
+  #diagram-area {
+    grid-row: 2;
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--bg);
+    background-image:
+      linear-gradient(rgba(77,201,212,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(77,201,212,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .layer-row {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    transition: border-color 0.2s;
+  }
+
+  .layer-row:hover { border-color: var(--border); }
+
+  .layer-label-col {
+    width: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 4px;
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border-light);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    letter-spacing: 1px;
+  }
+
+  .layer-name-col {
+    width: 140px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border-light);
+  }
+
+  .layer-name-col .l-name {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .layer-name-col .l-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  .blocks-col {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    background: var(--bg);
+    align-content: flex-start;
+  }
+
+  /* Block cards */
+  .block-card {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 120px;
+    position: relative;
+  }
+
+  .block-card:hover {
+    border-color: var(--border);
+    transform: translateY(-1px);
+  }
+
+  .block-card.selected {
+    border-color: var(--accent-teal);
+    box-shadow: 0 0 0 1px var(--accent-teal);
+  }
+
+  .block-card .block-name {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .block-card .block-desc {
+    font-size: 10px;
+    color: var(--text-dim);
+    line-height: 1.3;
+  }
+
+  .block-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .block-card[data-status="0"] { background: var(--status-0); }
+  .block-card[data-status="0"] .block-status-dot { background: var(--dot-0); }
+  .block-card[data-status="1"] { background: var(--status-1); }
+  .block-card[data-status="1"] .block-status-dot { background: var(--dot-1); }
+  .block-card[data-status="2"] { background: var(--status-2); }
+  .block-card[data-status="2"] .block-status-dot { background: var(--dot-2); }
+  .block-card[data-status="3"] { background: var(--status-3); }
+  .block-card[data-status="3"] .block-status-dot { background: var(--dot-3); }
+  .block-card[data-status="4"] { background: var(--status-4); }
+  .block-card[data-status="4"] .block-status-dot { background: var(--dot-4); }
+
+  /* Detail panel */
+  #detail-panel {
+    grid-row: 2 / 4;
+    border-left: 1px solid var(--border);
+    background: var(--bg-elevated);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .detail-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .detail-header h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .detail-header .detail-layer {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .detail-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .detail-section {
+    margin-bottom: 16px;
+  }
+
+  .detail-section h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .status-selector {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .status-option {
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-light);
+    background: var(--bg);
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .status-option:hover { border-color: var(--border); color: var(--text); }
+  .status-option.active { border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(77,201,212,0.08); }
+
+  .suggestion-card {
+    padding: 10px;
+    border-radius: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    margin-bottom: 6px;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .suggestion-card .sug-title {
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--accent-amber);
+    margin-bottom: 4px;
+  }
+
+  .suggestion-card .sug-text {
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+
+  .impl-prompt {
+    background: var(--bg);
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 6px;
+  }
+
+  .copy-btn:hover { background: var(--bg-hover); color: var(--text); }
+  .copy-btn.copied { border-color: var(--accent-green); color: var(--accent-green); }
+
+  /* Prompt output footer */
+  #prompt-footer {
+    grid-column: 2;
+    border-top: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 12px 20px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .prompt-header h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  #main-prompt {
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-muted);
+    white-space: pre-wrap;
+  }
+
+  /* Empty state */
+  .empty-detail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .empty-detail .empty-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.3;
+  }
+
+  .empty-detail p {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* Autonomy badge */
+  .autonomy-display {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .autonomy-level {
+    width: 36px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', 'SF Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid var(--border-light);
+    background: var(--bg);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .autonomy-level:hover { border-color: var(--border); }
+  .autonomy-level.active-l0 { border-color: var(--dot-0); color: var(--dot-0); background: rgba(72,79,88,0.15); }
+  .autonomy-level.active-l1 { border-color: var(--accent-amber); color: var(--accent-amber); background: rgba(210,153,34,0.1); }
+  .autonomy-level.active-l2 { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(88,166,255,0.1); }
+  .autonomy-level.active-l3 { border-color: var(--accent-green); color: var(--accent-green); background: rgba(63,185,80,0.1); }
+
+  /* Priority indicator */
+  .priority-high { border-left: 3px solid var(--accent-red); }
+  .priority-medium { border-left: 3px solid var(--accent-amber); }
+  .priority-low { border-left: 3px solid var(--accent-blue); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    #app { grid-template-columns: 220px 1fr 300px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Header -->
+  <div id="header">
+    <div style="display:flex; align-items:center; gap:12px">
+      <h1><span>POS</span> Stack Assessment</h1>
+      <div style="font-size:10px; color:var(--text-dim); border-left:1px solid var(--border); padding-left:12px; line-height:1.3">AI Mindset<br>POS Sprint</div>
+    </div>
+    <div class="header-meta">
+      <div class="score-badge" id="total-score">0 / 108</div>
+      <div class="tier-badge tier-none" id="tier-badge">NO POS</div>
+      <div style="color:var(--text-dim); font-size:11px" id="pct-display">0%</div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-section">
+      <h3>Presets</h3>
+      <div id="presets-container"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Layers</h3>
+      <div id="layer-scores"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Legend</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-0)"></div>Not Started</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-1)"></div>Planned</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-2)"></div>In Progress</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-3)"></div>Working</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-4)"></div>Mature</div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>Autonomy Levels</h3>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dot-0)"></div>L0 — manual, AI suggests</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-amber)"></div>L1 — AI drafts, you approve</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-blue)"></div>L2 — AI executes, you monitor</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--accent-green)"></div>L3 — full autopilot</div>
+    </div>
+
+    <div class="sidebar-section">
+      <h3>References</h3>
+      <div style="font-size:10px; line-height:1.8">
+        <a href="https://harness-engineering.ai/blog/what-is-harness-engineering/" target="_blank" style="color:var(--accent-blue); text-decoration:none">Harness Engineering</a><br>
+        <a href="https://arxiv.org/html/2506.12469v1" target="_blank" style="color:var(--accent-blue); text-decoration:none">Autonomy Levels (arXiv)</a><br>
+        <a href="https://pub.towardsai.net/state-of-context-engineering-in-2026-cf92d010eab1" target="_blank" style="color:var(--accent-blue); text-decoration:none">Context Engineering 2026</a><br>
+        <a href="https://dev.to/jan_lucasandmann_bb9257c/claude-code-to-ai-os-blueprint-skills-hooks-agents-mcp-setup-in-2026-46gg" target="_blank" style="color:var(--accent-blue); text-decoration:none">Claude Code as AI OS</a><br>
+        <a href="https://curiouslychase.com/posts/ai-native-obsidian-vault-setup-guide/" target="_blank" style="color:var(--accent-blue); text-decoration:none">AI-Native Obsidian Vault</a><br>
+        <a href="https://www.claudedirectory.org/blog/mcp-servers-guide" target="_blank" style="color:var(--accent-blue); text-decoration:none">MCP Servers Guide</a><br>
+        <a href="https://grammy.dev/guide/getting-started.html" target="_blank" style="color:var(--accent-blue); text-decoration:none">grammY (Telegram bot)</a><br>
+        <a href="https://krisp.ai/meeting-transcription/" target="_blank" style="color:var(--accent-blue); text-decoration:none">Krisp (transcription)</a>
+      </div>
+    </div>
+
+    <div class="sidebar-section" style="margin-top:auto; padding-top:16px; border-top:1px solid var(--border)">
+      <div style="font-size:10px; color:var(--text-dim); line-height:1.5">
+        <strong style="color:var(--accent-teal)">AI Mindset</strong> POS Sprint<br>
+        <a href="https://aimindsetspace.substack.com/p/ai-mindset" target="_blank" style="color:var(--text-dim); text-decoration:none">substack</a> ·
+        <a href="https://base.aimindset.org/" target="_blank" style="color:var(--text-dim); text-decoration:none">knowledge base</a> ·
+        <a href="https://www.instagram.com/ai_mind_set_/" target="_blank" style="color:var(--text-dim); text-decoration:none">instagram</a><br>
+        No personal data. Local-only assessment.<br>
+        <span style="opacity:0.6">Two prompts: Block (right) = specific. Gap (bottom) = overview.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Diagram -->
+  <div id="diagram-area"></div>
+
+  <!-- Prompt footer -->
+  <div id="prompt-footer">
+    <div class="prompt-header">
+      <h3>Priority Gap Analysis</h3>
+      <div style="display:flex; align-items:center; gap:8px">
+        <span style="font-size:10px; color:var(--text-dim)">Overall plan based on weakest blocks</span>
+        <button class="copy-btn" id="copy-main-btn" onclick="copyMainPrompt()">Copy</button>
+      </div>
+    </div>
+    <div id="main-prompt">Select a preset or assess blocks to generate a prioritized implementation plan.</div>
+  </div>
+
+  <!-- Detail panel -->
+  <div id="detail-panel">
+    <div class="empty-detail" id="empty-state">
+      <div class="empty-icon">&#9633;</div>
+      <p>Click any block in the architecture<br>to assess and get improvement prompts</p>
+    </div>
+    <div id="detail-content" style="display:none">
+      <div class="detail-header">
+        <h2 id="detail-title">Block Name</h2>
+        <div class="detail-layer" id="detail-layer">L1 Infrastructure</div>
+      </div>
+      <div class="detail-body">
+        <div class="detail-section">
+          <h4>Description</h4>
+          <div id="detail-desc" style="font-size:12px; color:var(--text-muted); line-height:1.5"></div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Status</h4>
+          <div class="status-selector" id="status-selector"></div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Target Autonomy</h4>
+          <div class="autonomy-display" id="autonomy-selector"></div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Improvement Suggestions</h4>
+          <div id="suggestions-list"></div>
+        </div>
+
+        <div class="detail-section">
+          <h4>Block Implementation Prompt</h4>
+          <div style="font-size:10px; color:var(--text-dim); margin-bottom:6px">Copy this into Claude Code to implement this specific block</div>
+          <div class="impl-prompt" id="block-prompt"></div>
+          <button class="copy-btn" onclick="copyBlockPrompt()">Copy block prompt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────
+// DATA MODEL
+// ──────────────────────────────────────────────────
+
+const STATUS_LABELS = ['Not Started', 'Planned', 'In Progress', 'Working', 'Mature'];
+const STATUS_COLORS = ['var(--dot-0)', 'var(--dot-1)', 'var(--dot-2)', 'var(--dot-3)', 'var(--dot-4)'];
+
+const LAYERS = [
+  {
+    id: 'l6', code: 'L6', name: 'Governance',
+    desc: 'Evals, self-improvement, context management',
+    blocks: [
+      {
+        id: 'evals', name: 'Evals (T/R/C)', status: 0, autonomy: 0,
+        desc: 'Binary pass/fail assessment of every AI response across Text quality, Rules compliance, and Code quality. Auto-eval footer in every response.',
+        suggestions: [
+          { title: 'Start with binary', text: 'Don\'t use scales 1-5. Binary pass/fail forces clarity. T:pass R:fail C:n/a is the format.', priority: 'high' },
+          { title: 'Footer protocol', text: 'Add eval line to CLAUDE.md: "Every response ends with: eval: T:_ R:_ C:_". This makes self-assessment automatic.', priority: 'medium' },
+          { title: 'Accumulate patterns', text: 'After 3+ fails in one area, propose a rule for CLAUDE.md. The system improves itself.', priority: 'low' }
+        ],
+        prompt: `Add an evaluation protocol to my CLAUDE.md.
+
+Requirements:
+- Binary pass/fail across 3 areas: T (Text), R (Rules), C (Code)
+- T evaluates: structure, clarity, actionable insights, brevity
+- R evaluates: naming convention compliance, folder rules, formatting
+- C evaluates: code works, minimal, idiomatic
+- Every substantive response must end with: eval: T:_ R:_ C:_
+- Symbols: pass, fail, n/a
+- After 3+ fails in one area: auto-propose a new rule
+
+Add this section to my CLAUDE.md under "## Quality Protocol".`
+      },
+      {
+        id: 'context-mgmt', name: 'Context Protocol', status: 0, autonomy: 0,
+        desc: 'Managing context window usage with thresholds: OK (<50%), WARN (50-70%), CRIT (>70%). Auto-handoff when context runs out.',
+        suggestions: [
+          { title: 'Three modes', text: 'Define behavior changes at 50% and 70%. OK = full power. WARN = compact responses. CRIT = only handoff, no new tasks.', priority: 'high' },
+          { title: 'Handoff template', text: 'At CRIT, generate: what was done, what remains, exact prompt to continue. Save to CONTEXT-HANDOFF.md.', priority: 'medium' },
+          { title: 'Footer tracking', text: 'Show ctx usage in every response footer. Read from status line, never calculate manually.', priority: 'low' }
+        ],
+        prompt: `Add a Context Management Protocol to my CLAUDE.md.
+
+Define three modes based on context usage:
+- OK (< 50%): Full functionality, no restrictions
+- WARN (50-70%): Compact responses, minimize tool output, avoid unnecessary exploration
+- CRIT (> 70%): ONLY generate handoff block, do NOT start new tasks
+
+Handoff block format:
+---
+## Handoff
+**Project:** [name]
+**Path:** [path]
+### Done
+- [completed actions]
+### Remaining
+1. [ ] Task with specific details
+### Prompt
+Continue working on [project]...
+---
+
+Add footer requirement: every response shows "ctx: X% | Xk remaining | [mode symbol]"
+Symbols: OK, WARN (+ compact mode note), CRIT (+ /context-compact suggestion)`
+      },
+      {
+        id: 'audit', name: 'Health Audit', status: 0, autonomy: 0,
+        desc: 'Periodic system health check scoring 0-12 across all POS layers. Identifies gaps and suggests next actions.',
+        suggestions: [
+          { title: 'Score rubric', text: 'Each of 6 layers scores 0-2 points. Total 0-12. Below 6 = critical gaps. Above 9 = mature system.', priority: 'medium' },
+          { title: 'Weekly cadence', text: 'Run audit every Sunday or Friday. Compare with previous score. Track trend.', priority: 'low' },
+          { title: 'Skill patterns', text: 'A healthy POS has skills in 3+ of 4 patterns: Audit (scans), Pipeline (synthesizes), Generator (creates), Integrator (wraps MCP).', priority: 'medium' }
+        ],
+        prompt: `Create a /pos-audit skill that scans my POS infrastructure and scores it 0-12.
+
+Scoring rubric (each layer 0-2 points):
+- L1 Infrastructure: Claude Code installed (1pt), terminal + voice + shortcuts configured (2pt)
+- L2 Data & Context: CLAUDE.md exists (1pt), naming convention + vault structure + AGENTS.md (2pt)
+- L3 Orchestration: 1+ MCP server (1pt), hooks + sub-agents configured (2pt)
+- L4 Skills: 1 working skill (1pt), 3+ skills across multiple patterns (2pt)
+- L5 People & Org: shared vault or team context (1pt), role cards + team skills (2pt)
+- L6 Governance: evals in footer (1pt), context protocol + reflect + audit (2pt)
+
+Output: score table, gap analysis, top 3 priority actions.
+Check skill pattern diversity: Audit, Pipeline, Generator, Integrator — flag if <3 patterns.
+Save as ~/.claude/skills/pos-audit/SKILL.md`
+      },
+      {
+        id: 'reflect', name: 'Reflect & Learn', status: 0, autonomy: 0,
+        desc: 'Periodic analysis of accumulated evals to find patterns and generate improvement rules for CLAUDE.md.',
+        suggestions: [
+          { title: 'Pattern detection', text: 'Scan eval history for repeated fails. 3+ fails in same area = systemic issue, needs a rule.', priority: 'medium' },
+          { title: 'Rule generation', text: 'Proposed rules go to improvements.md first, then merge to CLAUDE.md after validation.', priority: 'low' }
+        ],
+        prompt: `Create a /reflect skill that analyzes my accumulated eval results.
+
+Steps:
+1. Read eval log (if exists) or scan recent conversation patterns
+2. Identify areas with repeated fails or near-misses
+3. For each pattern found:
+   - Describe the issue
+   - Propose a specific rule for CLAUDE.md
+   - Rate severity (blocker / annoyance / nice-to-have)
+4. Output: pattern analysis + proposed CLAUDE.md additions
+5. Append results to ~/.claude/evals/improvements.md
+
+Run cadence: weekly (suggest Sunday).
+Format: clear sections with actionable rules, not vague advice.`
+      }
+    ]
+  },
+  {
+    id: 'l5', code: 'L5', name: 'People & Org',
+    desc: 'Team collaboration, shared context, roles',
+    blocks: [
+      {
+        id: 'shared-vault', name: 'Shared Vault', status: 0, autonomy: 0,
+        desc: 'Synced Obsidian vault for team collaboration. Shared naming convention, folder structure, and AGENTS.md for team-wide AI navigation.',
+        suggestions: [
+          { title: 'Sync method', text: 'Obsidian Sync, Dropbox, or Git. Choose one. Team members need the same vault structure.', priority: 'medium' },
+          { title: 'AGENTS.md for team', text: 'Create AGENTS.md in vault root — the navigation index so any team member\'s AI can find what it needs.', priority: 'high' }
+        ],
+        prompt: `Set up a shared team vault structure.
+
+Requirements:
+- Create AGENTS.md in vault root with folder index and purpose of each folder
+- Naming convention: {PROJECT} {type} description - YYYY-MM-DD.md
+- Define 5-7 project codes for team areas
+- Define content types: {rule}, {research}, {meeting}, {transcript}, {analysis}, {overview}, {plan}
+- Folder structure: inbox/ (staging), meetings/, aim-rules/ (standards), Org/ (team structure)
+- Add vault navigation rules to shared CLAUDE.md section
+
+Sync via: [Obsidian Sync / Dropbox / Git — pick one]`
+      },
+      {
+        id: 'role-cards', name: 'Role Cards', status: 0, autonomy: 0,
+        desc: 'Markdown files describing each team member: role, responsibilities, zones of expertise. AI reads these to route tasks and flag misassignments.',
+        suggestions: [
+          { title: 'One file per person', text: '{role} Name.md with structured fields: role title, responsibilities, decision zones, working preferences.', priority: 'medium' },
+          { title: 'Cross-reference in tasks', text: 'When assigning work, AI checks role card to flag misaligned tasks (e.g., tech task to content person).', priority: 'low' }
+        ],
+        prompt: `Create role card templates for my team.
+
+File format: Org/HR/roles/{role} FirstName LastName.md
+
+Each role card includes:
+- Name, role title
+- Key responsibilities (3-5 bullet points)
+- Decision authority (what they can decide autonomously)
+- Expertise zones (technologies, domains, skills)
+- Working preferences (async vs sync, communication style)
+- Current focus areas (updated monthly)
+
+Add to CLAUDE.md: "Before assigning tasks, read role cards. Flag tasks that don't match the person's expertise zone."
+
+Create cards for each team member: [list your team]`
+      },
+      {
+        id: 'team-skills', name: 'Team Skills', status: 0, autonomy: 0,
+        desc: 'Skills shared across team via vault sync. Team-specific workflows accessible to all members\' AI agents.',
+        suggestions: [
+          { title: 'Symlink strategy', text: 'Claude Code finds skills in ~/.claude/skills/ and .claude/skills/. Team vault is a subfolder. Use symlinks to bridge.', priority: 'medium' },
+          { title: 'Prefix convention', text: 'Team skills get a prefix (e.g., AIM-*) so they don\'t clash with personal skills.', priority: 'high' }
+        ],
+        prompt: `Set up team skill sharing.
+
+Architecture:
+- Team skills live in: [vault]/aim-rules/skills/
+- Prefix: TEAM- (or your project prefix)
+- Each team member symlinks team skills to their .claude/skills/
+
+Create sync script:
+#!/bin/bash
+TEAM_SKILLS="[vault]/aim-rules/skills"
+LOCAL_SKILLS=".claude/skills"
+for skill in "$TEAM_SKILLS"/TEAM-*; do
+  name=$(basename "$skill")
+  [ ! -L "$LOCAL_SKILLS/$name" ] && ln -s "$skill" "$LOCAL_SKILLS/$name"
+done
+
+First team skills to create:
+- /team-meeting-summary — process meeting transcript for the team
+- /team-weekly-sync — generate weekly status from each person's updates`
+      },
+      {
+        id: 'comm-style', name: 'Communication Style', status: 0, autonomy: 0,
+        desc: 'Defined tones for different contexts: partners, team, public channel. AI adapts voice automatically based on recipient.',
+        suggestions: [
+          { title: 'Tone file', text: 'Create a content voice file with 3+ tones: professional (partners), casual (team), public (channel). Include examples.', priority: 'medium' },
+          { title: 'Auto-detect', text: 'Add triggers to CLAUDE.md: "If writing to partner -> use partner tone. If writing for channel -> use public tone."', priority: 'low' }
+        ],
+        prompt: `Create a communication style guide for my AI to follow.
+
+Define 3 tones with examples:
+
+1. **Partner tone** — for business communication
+   - Concise, specific, action-oriented
+   - Numbers and dates as anchors
+   - Split action items by sides ("from your side" / "from our side")
+   - No corporate filler, no false politeness
+
+2. **Team tone** — for internal messages
+   - Casual, direct, lowercase start
+   - Use names, reference specific tasks
+   - EN dash for lists
+   - Short blocks, 2-4 lines each
+
+3. **Public tone** — for channel/blog posts
+   - Hook in first sentence
+   - Bold key concepts
+   - Conversational but insightful
+   - End with question or CTA
+
+Save as: rules/content-voice.md
+Add to CLAUDE.md: "Read content-voice.md before writing any message. Match tone to recipient."
+
+Include 2-3 example messages per tone.`
+      }
+    ]
+  },
+  {
+    id: 'l4', code: 'L4', name: 'Skills & Pipelines',
+    desc: 'Reusable AI workflows, automation chains',
+    blocks: [
+      {
+        id: 'first-skill', name: 'First Skill', status: 0, autonomy: 0,
+        desc: 'Your first working Claude Code skill — one command that triggers a chain of actions. The "hello world" of POS.',
+        suggestions: [
+          { title: 'One skill, not Jarvis', text: 'The temptation is to build everything. The discipline is to start with ONE repeating workflow. Pick the most painful process.', priority: 'high' },
+          { title: 'Rule of 3', text: 'If you repeat the same instructions >3 times -> create a skill. Not before.', priority: 'high' },
+          { title: 'Anatomy', text: 'Skill = markdown file with frontmatter (name, description) + step-by-step instructions. The description tells Claude WHEN to trigger it.', priority: 'medium' }
+        ],
+        prompt: `Create my first Claude Code skill.
+
+Start by asking me: "What do you do every day or several times a week that feels manual and repetitive? Describe it step by step."
+
+Then build a skill from my answer.
+
+Skill structure:
+---
+name: skill-name
+description: When to trigger — be specific. Claude under-triggers without explicit cues.
+---
+
+## Steps
+1. [First action — read/gather data]
+2. [Process — transform/analyze]
+3. [Output — create file/send message/update card]
+
+## Output Format
+[Define exact format]
+
+Requirements:
+- Save to ~/.claude/skills/[name]/SKILL.md
+- Test with a real execution after creation
+- Under 50 lines — if longer, it's too complex for a first skill
+- Must use at least one real data source (file, calendar, vault)
+- Must produce a tangible artifact (file, message, summary)`
+      },
+      {
+        id: 'meta-skills', name: 'Meta-Skills', status: 0, autonomy: 0,
+        desc: 'Skills that chain other skills: /morning runs calendar + focus + telegram. Pipeline orchestrators.',
+        suggestions: [
+          { title: 'After 3 working skills', text: 'Don\'t create meta-skills before you have 3 stable atomic skills. Premature orchestration = fragile system.', priority: 'high' },
+          { title: 'Morning brief = aha moment', text: 'The "aha moment" is when the system comes to you. /morning is the canonical first meta-skill.', priority: 'medium' }
+        ],
+        prompt: `Create a /morning meta-skill that synthesizes my daily context.
+
+Pipeline:
+1. Read calendar events for today (MCP or manual)
+2. Check open tasks/action items from vault
+3. Scan yesterday's files for unfinished work
+4. Synthesize into ONE focus sentence for the day
+5. Output: daily focus card + send to Telegram (if available)
+
+Graceful degradation:
+- No calendar MCP? Skip events, work with vault only
+- No Telegram bot? Save to vault as daily note
+- No tasks system? Use recent vault files as proxy
+
+Format: 3 focus items + 1 sentence priority + energy suggestion
+Save to: ~/.claude/skills/morning/SKILL.md
+
+This should work even with a minimal POS (just vault + 1 MCP).`
+      },
+      {
+        id: 'pipelines', name: 'Pipelines', status: 0, autonomy: 0,
+        desc: 'Multi-step data flows: call transcript -> summary -> people cards -> action items. Automated chains triggered by events.',
+        suggestions: [
+          { title: 'CRM pipeline', text: 'The classic: call -> Krisp transcript -> /transcript-process -> summary + @people/ card update + action items.', priority: 'medium' },
+          { title: 'Decompose first', text: 'A pipeline is NOT one big skill. It\'s a chain of atomic skills. Build each step separately, then orchestrate.', priority: 'high' }
+        ],
+        prompt: `Design a transcript processing pipeline.
+
+Chain of skills:
+1. /transcript-process — parse raw transcript markdown
+   - Extract: participants, decisions, action items, key quotes
+   - Create: summary file with naming convention
+
+2. /update-contact — update people cards
+   - For each participant: find or create @people/Name.md
+   - Append: last_contact date, meeting summary, open action items
+
+3. /extract-actions — create action items
+   - For each action item: who, what, by when
+   - Save to tasks/ or daily note
+
+Pipeline trigger: when a new transcript file appears in vault (or manual /process-call command)
+
+Each skill is atomic — works independently. The pipeline chains them.
+Build and test each step separately before combining.`
+      },
+      {
+        id: 'skill-factory', name: 'Skill Factory', status: 0, autonomy: 0,
+        desc: 'A skill that creates other skills from natural language descriptions. Meta-skill for scaling the system.',
+        suggestions: [
+          { title: 'Pattern library', text: 'Skills follow 4 patterns: Audit (scan+score), Pipeline (gather+synthesize), Generator (produce artifact), Integrator (wrap MCP).', priority: 'medium' },
+          { title: 'Quality gate', text: 'Factory should validate: description has triggers, steps are atomic, output format is defined, file follows convention.', priority: 'low' }
+        ],
+        prompt: `Create a /skill-factory meta-skill.
+
+Input: natural language description of a workflow
+Output: complete skill file ready to install
+
+Process:
+1. Ask user to describe the workflow in plain language
+2. Identify skill pattern: Audit / Pipeline / Generator / Integrator
+3. Extract: trigger conditions, input data, steps, output format
+4. Generate SKILL.md with:
+   - Frontmatter (name, description with explicit triggers)
+   - Steps with MCP tool references where applicable
+   - Output format specification
+   - Error handling / graceful degradation
+5. Validate: <50 lines, description has triggers, steps are atomic
+6. Ask: save to global (~/.claude/skills/), project (.claude/skills/), or team (vault)?
+7. Save and test with a dry run
+
+Include 4 pattern templates as reference.
+Save as: ~/.claude/skills/skill-factory/SKILL.md`
+      },
+      {
+        id: 'scheduled', name: 'Scheduled Agents', status: 0, autonomy: 0,
+        desc: 'Cron-triggered Claude Code runs: morning brief at 07:30, undone digest at 18:00, weekly review on Friday.',
+        suggestions: [
+          { title: 'Start with ONE', text: 'Don\'t schedule 5 agents on day one. Start with daily-focus at 07:30. Add more after it\'s been reliable for a week.', priority: 'high' },
+          { title: 'Proactive = POS alive', text: 'A scheduled agent means the system comes to YOU. This is the psychological tipping point.', priority: 'medium' }
+        ],
+        prompt: `Set up my first scheduled agent — daily focus at 07:30.
+
+Technical setup:
+- crontab entry: 30 7 * * * cd [vault-path] && claude -p "Run /morning and send result to Telegram" --allowedTools ...
+- Or use launchd plist for macOS (more reliable than cron for GUI apps)
+
+Requirements:
+- Runs silently in background
+- Sends result to Telegram (saved messages or bot)
+- Creates daily note in vault
+- Logs execution to a log file for debugging
+
+Start with JUST this one. After 5 successful days, add:
+- 18:00 /undone — digest of unfinished items
+- Friday 17:00 /weekly-review — week summary
+
+Test: run the command manually first. Only schedule after it works 3 times in a row.`
+      }
+    ]
+  },
+  {
+    id: 'l3', code: 'L3', name: 'Orchestration',
+    desc: 'Agent runtime, MCP connections, hooks',
+    blocks: [
+      {
+        id: 'mcp-servers', name: 'MCP Servers', status: 0, autonomy: 0,
+        desc: 'Model Context Protocol connections — the "drivers" that give Claude access to external data: calendar, telegram, files, search.',
+        suggestions: [
+          { title: 'Unix analogy', text: 'MCP = kernel module / driver. It connects Claude to an external service. CLAUDE.md = /etc/ config. Skill = script.sh executable.', priority: 'high' },
+          { title: 'Start with 1-2', text: 'Calendar + Filesystem is enough to start. Don\'t install 10 MCP servers before you have skills that use them.', priority: 'high' },
+          { title: 'Graceful degradation', text: 'Skills must work with partial MCP availability. If calendar MCP is down, morning brief still runs with vault data only.', priority: 'medium' }
+        ],
+        prompt: `Configure my first MCP servers.
+
+Priority order (install one at a time, test before next):
+
+1. **Filesystem** — read/write files in vault
+   npm install -g @anthropic-ai/mcp-filesystem
+   Config: allowed directories = [vault path]
+
+2. **Google Calendar** — events, schedule, free/busy
+   Provides: today's events, upcoming meetings, free slots
+
+3. **Telegram** (when ready) — send/receive messages
+   Provides: message sending, channel monitoring
+
+For each MCP server:
+- Install
+- Add to Claude Code settings (settings.json or .mcp.json)
+- Test with a simple query: "What MCP servers do I have?"
+- Create one skill that uses it
+
+Config location: ~/.claude/settings.json (global) or .mcp.json (project)
+
+IMPORTANT: Each skill should gracefully degrade if an MCP server is unavailable.
+Pattern: "If [MCP] available -> use it. If not -> skip this step, work with what you have."`
+      },
+      {
+        id: 'hooks', name: 'Hooks', status: 0, autonomy: 0,
+        desc: 'Shell commands that fire on Claude Code events: before/after tool calls, on session start/stop. The automation wiring.',
+        suggestions: [
+          { title: 'Session start hook', text: 'Load daily context, check MCP status, set up statusline. This runs every time you start Claude Code.', priority: 'medium' },
+          { title: 'Pre-commit hook', text: 'Before any git commit: lint, format, check for secrets. Prevents bad commits automatically.', priority: 'low' }
+        ],
+        prompt: `Set up essential Claude Code hooks.
+
+Hooks are shell commands triggered by Claude Code events.
+Config: ~/.claude/settings.json under "hooks"
+
+Essential hooks to start:
+
+1. **Session Start** — runs when Claude Code launches
+   - Check MCP server health
+   - Load today's context (calendar events, pending tasks)
+   - Set statusline info
+
+2. **Pre-tool (optional)** — runs before specific tool calls
+   - Before file writes: backup check
+   - Before git operations: branch validation
+
+Add to settings.json:
+{
+  "hooks": {
+    "sessionStart": [
+      { "command": "echo 'Session started'" }
+    ]
+  }
+}
+
+Start simple. Add complexity only when you need it.
+Test each hook individually before combining.`
+      },
+      {
+        id: 'subagents', name: 'Sub-agents', status: 0, autonomy: 0,
+        desc: 'Background Claude instances handling tasks in parallel. Research agents, monitoring agents, processing agents.',
+        suggestions: [
+          { title: 'Background research', text: 'The simplest sub-agent: detect session topic -> spawn background Sonnet -> search with Exa -> write results to file.', priority: 'low' },
+          { title: 'Don\'t over-engineer', text: 'Sub-agents are Phase 3-4 complexity. Get skills working first. Sub-agents are for parallelizing established workflows.', priority: 'high' }
+        ],
+        prompt: `Set up your first background sub-agent pattern.
+
+Use case: ambient background research when starting a new topic.
+
+Pattern:
+1. Detect topic from user's first message
+2. Spawn background agent (model: sonnet, run_in_background: true)
+3. Agent searches (Exa, web) for relevant context
+4. Agent writes results to /tmp/ or vault inbox
+5. Main session continues without blocking
+6. When results ready, integrate into conversation
+
+Implementation:
+- Add to CLAUDE.md: "On first substantive message, if topic is strategic or multi-step, launch background research"
+- Research agent writes to: /tmp/claude-research-results.md
+- State tracking: /tmp/claude-research-state.json
+
+This is an ADVANCED pattern. Prerequisites:
+- Working CLAUDE.md
+- At least 2 skills operational
+- Understanding of context management`
+      },
+      {
+        id: 'context-protocol', name: 'Context Engineering', status: 0, autonomy: 0,
+        desc: 'Managing what, when, and in what order is fed to the model. The central idea of POS — context, not prompts.',
+        suggestions: [
+          { title: 'Context > Prompts', text: 'Prompt engineering is 2023. Context engineering is 2025. Harness engineering is 2026. POS is a context harness.', priority: 'high' },
+          { title: 'CLAUDE.md loads every time', text: 'Everything in CLAUDE.md is read at session start. This IS your context engineering. Curate it ruthlessly.', priority: 'high' }
+        ],
+        prompt: `Optimize your CLAUDE.md for context engineering.
+
+Principles:
+- CLAUDE.md loads on every session start = your permanent context layer
+- Every line costs tokens. Be ruthless about what stays.
+- Order matters: critical rules first, nice-to-haves last
+- Use references: "Read file X for details" instead of pasting content
+
+Structure your CLAUDE.md:
+1. Identity (who are you, what do you do — 3 lines)
+2. Critical rules (naming convention, forbidden actions — must-follow)
+3. Project context (current focus, active projects — changes weekly)
+4. Tool config (MCP usage notes, file paths — reference only)
+5. Quality protocol (evals, footer — auto-applied)
+
+Anti-patterns:
+- Pasting entire documents into CLAUDE.md (use file references)
+- Rules that repeat what Claude already knows
+- Temporary context that should be in a session, not permanent config
+- More than 500 lines (aim for 200-300)
+
+Review CLAUDE.md monthly. Delete anything the agent already follows without being told.`
+      }
+    ]
+  },
+  {
+    id: 'l2', code: 'L2', name: 'Data & Context',
+    desc: 'Vault structure, naming, persistent context',
+    blocks: [
+      {
+        id: 'claude-md', name: 'CLAUDE.md', status: 0, autonomy: 0,
+        desc: 'The config file. Read by Claude on every session start. Contains rules, conventions, project context, forbidden actions. Your "/etc/" config.',
+        suggestions: [
+          { title: 'This is Phase 0', text: 'CLAUDE.md should be the FIRST thing you create. Even before vault structure. It\'s the foundation everything builds on.', priority: 'high' },
+          { title: 'Convention = Agreement', text: 'CLAUDE.md is an agreement between you and the agent. The clearer the agreement, the more autonomy you can delegate.', priority: 'high' },
+          { title: 'Not a novel', text: 'Aim for 200-300 lines. Include rules, naming convention, project codes, forbidden actions, file references. Not documentation.', priority: 'medium' }
+        ],
+        prompt: `Create my CLAUDE.md — the foundation of my Personal Operating System.
+
+This file is read by Claude on every session start. It defines WHO the agent works for and HOW.
+
+Structure:
+## Identity
+- My name, role, primary projects (3 lines max)
+
+## Naming Convention
+- Format: {project} {type} description - YYYY-MM-DD.md
+- Project codes: [define 5-7 for your areas]
+- Content types: {rule}, {research}, {meeting}, {transcript}, {analysis}, {overview}, {plan}, {draft}
+- Date always at the end, EN dash before date
+
+## Vault Structure
+- List top-level folders and their purpose
+- File goes to _inbox/ if unsure
+
+## Rules
+- Never create new folders (use naming convention for organization)
+- Never commit secrets (.env, API keys)
+- Never send messages without explicit confirmation
+- Use existing files before creating new ones
+
+## Active Projects
+- [List 3-5 current projects with one-line descriptions]
+
+## Quality Protocol
+- Eval footer: T:_ R:_ C:_ in every response
+- Context protocol: OK/WARN/CRIT thresholds
+
+Save to: project root or ~/.claude/CLAUDE.md (global)
+Start with 150 lines. Grow organically. Review monthly.`
+      },
+      {
+        id: 'naming', name: 'Naming Convention', status: 0, autonomy: 0,
+        desc: 'File naming as API. Format: {project} {type} description - YYYY-MM-DD.md. Agents find files by pattern-matching names.',
+        suggestions: [
+          { title: 'This IS the API', text: 'Agent searches: Grep for {type} -> finds files. Without naming convention, 10,000 files = chaos. With it = instant retrieval.', priority: 'high' },
+          { title: 'Flat > nested', text: 'Files are found by naming convention, not folder diving. _inbox/ is the entry point for everything new. Keep folders flat.', priority: 'high' },
+          { title: 'Date at the end', text: 'Always: description - YYYY-MM-DD.md. Never put date in the middle. Never add tool name suffix.', priority: 'medium' }
+        ],
+        prompt: `Define my naming convention — the API that makes 10,000+ files instantly searchable.
+
+Format: {project} {type} description - YYYY-MM-DD.md
+
+Step 1 — Define project codes (5-7):
+Think about your main areas of work. Examples:
+- {POS} = Personal OS
+- {BIZ} = Business/company
+- {FUND} = Investment fund
+- {CONTENT} = Content creation
+Each code should be 3-5 chars, uppercase, memorable.
+
+Step 2 — Define content types (10-15):
+- {rule} = standards, conventions
+- {research} = deep dives, analysis
+- {meeting} = meeting notes, summaries
+- {transcript} = raw transcripts
+- {analysis} = data analysis, comparisons
+- {overview} = broad summaries
+- {plan} = plans, roadmaps
+- {draft} = work in progress
+- {prd} = product requirements
+- {guide} = how-to guides
+
+Step 3 — Folder mapping:
+| Type | Folder |
+|------|--------|
+| {rule} | rules/ |
+| {research}, {analysis} | _inbox/ |
+| {meeting}, {transcript} | meetings/ |
+| {draft} | _inbox/ |
+
+Step 4 — Embed in CLAUDE.md with examples.
+
+Test: create 5 files using convention, then search by {type} pattern. Should find all in <2 seconds.`
+      },
+      {
+        id: 'vault', name: 'Vault Structure', status: 0, autonomy: 0,
+        desc: 'Obsidian vault with flat folders, YAML frontmatter, backlinks, and wiki-links. The knowledge layer of POS.',
+        suggestions: [
+          { title: '7 base folders', text: '_inbox/, _templates/, projects/, meetings/, @people/, rules/, daily/ — start here. Add only when needed.', priority: 'medium' },
+          { title: 'Frontmatter matters', text: 'Every file gets YAML frontmatter: tags, date, project, type. This is metadata for both humans and agents.', priority: 'medium' },
+          { title: 'No migration marathon', text: 'Don\'t migrate 3000 Apple Notes at once. Transfer 50 most-needed manually. The rest can wait or stay.', priority: 'high' }
+        ],
+        prompt: `Set up my Obsidian vault for POS.
+
+Folder structure (7 base folders):
+_inbox/        — everything new lands here first
+_templates/    — templates for daily notes, meetings, etc.
+projects/      — active project folders
+meetings/      — meeting notes and transcripts
+@people/       — contact cards (CRM)
+rules/         — naming convention, standards, CLAUDE.md
+daily/         — daily notes
+
+Principles:
+- Flat > nested. 2 levels max.
+- New file? -> _inbox/ first, move later (or never, naming convention finds it)
+- Never create new folders. Use naming convention to organize.
+
+YAML frontmatter template:
+---
+tags: [project-code, content-type]
+date: YYYY-MM-DD
+project: {project}
+type: {type}
+---
+
+Obsidian plugins to install:
+- Templater (auto-frontmatter)
+- Calendar (daily notes)
+- Dataview (dynamic queries — later)
+
+Migration strategy:
+- Week 1: Empty vault + naming convention + 10 most-needed files
+- Week 2: Transfer 20-30 more files from Apple Notes
+- Month 2: Evaluate what's left. Most won't be needed.
+- NEVER bulk-import. Quality over quantity.`
+      },
+      {
+        id: 'agents-md', name: 'AGENTS.md', status: 0, autonomy: 0,
+        desc: 'Navigation index for AI agents — tells Claude where to find what in the vault. The map that makes vault accessible to any agent.',
+        suggestions: [
+          { title: 'Vault GPS', text: 'AGENTS.md is what CLAUDE.md is for behavior but for navigation. Without it, agent has to search blindly.', priority: 'medium' },
+          { title: 'Keep current', text: 'Update AGENTS.md when vault structure changes. Stale map = wrong directions.', priority: 'low' }
+        ],
+        prompt: `Create AGENTS.md — the navigation index for AI agents.
+
+Place at vault root. Structure:
+
+# Vault Navigation
+
+## Folder Map
+| Folder | Purpose | Key file types |
+|--------|---------|---------------|
+| _inbox/ | Staging area | All types |
+| meetings/ | Meeting notes | {meeting}, {transcript} |
+| rules/ | Standards | {rule}, {guide} |
+| projects/ | Active projects | Mixed |
+| @people/ | Contact cards | {role}, contact cards |
+| daily/ | Daily notes | Daily focus |
+
+## Naming Convention
+Format: {project} {type} description - YYYY-MM-DD.md
+[List project codes and types]
+
+## Key Files
+- CLAUDE.md: [path] — behavior config
+- Naming convention: [path] — full rules
+- Active projects: [list with paths]
+
+## Search Tips
+- Find by type: grep for {research} in filenames
+- Find by project: grep for {POS} in filenames
+- Find by date: grep for YYYY-MM-DD pattern
+- CRM lookup: check @people/ folder
+
+Update this file whenever vault structure changes.`
+      },
+      {
+        id: 'memory', name: 'Memory System', status: 0, autonomy: 0,
+        desc: 'Persistent cross-session memory in markdown files. Stores user preferences, project decisions, feedback, references.',
+        suggestions: [
+          { title: 'Auto-memory', text: 'Claude Code has built-in memory at ~/.claude/projects/*/memory/. Use MEMORY.md as index + individual .md files for entries.', priority: 'medium' },
+          { title: '4 memory types', text: 'User (who you are), Feedback (how to approach work), Project (active context), Reference (where to find things).', priority: 'low' }
+        ],
+        prompt: `Set up your cross-session memory system.
+
+Location: ~/.claude/projects/[project-path]/memory/
+
+Structure:
+MEMORY.md          — index of all memories (keep under 200 lines)
+user_role.md       — who you are, expertise, preferences
+feedback_*.md      — corrections and validations from past sessions
+project_*.md       — active project context, decisions, deadlines
+reference_*.md     — pointers to external resources
+
+Each memory file has frontmatter:
+---
+name: memory-name
+description: one-line description (used for relevance matching)
+type: user|feedback|project|reference
+---
+
+Rules:
+- Don't save things derivable from code or git history
+- Don't save debugging solutions (the fix is in the code)
+- DO save: user preferences, surprising decisions, external references
+- Update stale memories, don't accumulate duplicates
+- MEMORY.md is auto-loaded — keep it concise
+
+Start with 2 memories:
+1. User role memory (your role, expertise, working preferences)
+2. Project reference memory (where to find key external resources)`
+      }
+    ]
+  },
+  {
+    id: 'l1', code: 'L1', name: 'Infrastructure',
+    desc: 'Base tools, access speed, input methods',
+    blocks: [
+      {
+        id: 'claude-code', name: 'Claude Code CLI', status: 0, autonomy: 0,
+        desc: 'Primary AI interface. Terminal-based, supports skills, MCP, hooks, sub-agents. The "kernel" of POS.',
+        suggestions: [
+          { title: 'Install via npm', text: 'npm install -g @anthropic-ai/claude-code. NOT the native installer (Cloudflare blocks updates).', priority: 'high' },
+          { title: 'Verify version', text: 'Run: which claude && claude --version. Compare with: npm show @anthropic-ai/claude-code version.', priority: 'medium' }
+        ],
+        prompt: `Install and configure Claude Code CLI.
+
+Installation:
+npm install -g @anthropic-ai/claude-code
+
+Verify:
+which claude && claude --version
+
+If you have a native installer conflict:
+rm -rf ~/.local/bin/claude ~/.local/share/claude
+
+First run checklist:
+1. Launch: claude
+2. Set API key (if not using Anthropic account)
+3. Create ~/.claude/ directory structure:
+   ~/.claude/
+   ├── CLAUDE.md        (global config — create next)
+   ├── settings.json    (permissions, hooks)
+   ├── skills/          (global skills)
+   └── projects/        (per-project memory)
+
+4. Test: ask Claude "What tools do you have access to?"
+5. Test: ask Claude "Read my CLAUDE.md" (should fail — we haven't created it yet)
+
+You now have L1 Infrastructure for Claude Code.
+Next step: create CLAUDE.md (L2 Data & Context).`
+      },
+      {
+        id: 'terminal', name: 'Terminal Setup', status: 0, autonomy: 0,
+        desc: 'Terminal configuration: iTerm2/Warp, tmux/cmux sessions, status line, shell profiles. The workspace layer.',
+        suggestions: [
+          { title: 'Terminal = office', text: 'Your terminal is your AI office. Multiple panes = multiple agents working in parallel.', priority: 'low' },
+          { title: 'Status line', text: 'Show context usage, current task, time in your terminal statusline. Awareness without checking.', priority: 'medium' }
+        ],
+        prompt: `Configure your terminal for POS.
+
+Essential setup:
+1. Terminal: iTerm2 (Mac) or Warp
+2. Multiplexer: tmux (for persistent sessions, split panes)
+3. Shell: zsh with minimal prompt (show path + git branch)
+
+tmux basics:
+- Install: brew install tmux
+- Config: ~/.tmux.conf with sensible defaults
+- Key: Ctrl+B then % (split vertical), " (split horizontal)
+- Detach: Ctrl+B then D (session persists)
+
+POS workspace layout:
+[Left pane: Claude Code main session]
+[Right top: file watcher / logs]
+[Right bottom: quick commands / second Claude instance]
+
+Status line (tmux):
+- Show: time, context %, current project
+- Keep minimal — you should see it, not read it
+
+Test: open tmux, split into 3 panes, run Claude Code in one.
+This gives you parallel agent capability.`
+      },
+      {
+        id: 'obsidian-app', name: 'Obsidian', status: 0, autonomy: 0,
+        desc: 'Visual vault interface with graph view, quick switcher, backlinks, and wiki-links. The human-facing view of your knowledge.',
+        suggestions: [
+          { title: 'Quick Switcher is key', text: 'Cmd+O → type project code → find any file in <2 seconds. This is the naming convention payoff.', priority: 'medium' },
+          { title: 'Don\'t over-plugin', text: 'Start with: Templater, Calendar, maybe Dataview. Add plugins only when you have a specific need.', priority: 'low' }
+        ],
+        prompt: `Set up Obsidian as your vault viewer.
+
+Install: https://obsidian.md (free for personal use)
+
+Open vault: point Obsidian to your vault folder.
+
+Essential plugins (install from Community Plugins):
+1. Templater — auto-fill frontmatter, create from templates
+2. Calendar — daily notes sidebar
+3. Quick Switcher++ — enhanced file search (Cmd+O)
+
+Settings:
+- Default new file location: _inbox/
+- Wiki-links: enabled (for [[topic]] linking)
+- YAML frontmatter: visible in edit mode
+
+Key shortcuts:
+- Cmd+O: Quick Switcher (find any file by name)
+- Cmd+P: Command palette
+- Cmd+N: New note (goes to _inbox/)
+- Cmd+Shift+F: Search vault content
+
+Test: create 5 files with naming convention, then find each using Cmd+O + project code.
+Target: any file findable in <5 seconds.`
+      },
+      {
+        id: 'voice', name: 'Voice Input', status: 0, autonomy: 0,
+        desc: 'Voice-to-text pipeline: Krisp for calls (auto-transcript), Whisper for voice notes, WISPR Flow for dictation.',
+        suggestions: [
+          { title: 'Two channels', text: 'Krisp/Granola = call transcription (automatic). Whisper = Telegram voice messages (bot-triggered). Different tools for different inputs.', priority: 'high' },
+          { title: 'Krisp first', text: 'If you take calls, Krisp is the highest-ROI voice tool. Auto-records, auto-transcribes, saves to markdown.', priority: 'medium' }
+        ],
+        prompt: `Set up voice input for POS.
+
+Two separate channels:
+
+1. **Call transcription** (automatic)
+   - Install: Krisp (https://krisp.ai) or Granola
+   - Config: auto-record all calls, save transcript as markdown
+   - Output: vault/meetings/ folder with naming convention
+   - This is PASSIVE — set once, forget, all calls become searchable text
+
+2. **Voice notes** (Telegram bot, optional)
+   - Whisper API for voice-to-text
+   - Telegram bot receives voice message -> Whisper -> markdown -> vault
+   - This is ACTIVE — you send voice notes when you want to capture thoughts
+
+3. **Dictation** (optional, advanced)
+   - WISPR Flow or macOS dictation for hands-free text input
+   - Works in any app including terminal
+
+Priority order:
+1. Krisp (if you take calls) — immediate ROI
+2. macOS dictation (free, built-in) — good enough for notes
+3. Telegram voice bot (Phase 3-4) — requires bot setup
+4. WISPR Flow (if you dictate a lot) — paid tool`
+      },
+      {
+        id: 'shortcuts', name: 'Quick Access', status: 0, autonomy: 0,
+        desc: 'Raycast/Alfred for instant AI access. Cmd+Space -> AI in <2 seconds from any context. The speed layer.',
+        suggestions: [
+          { title: '<2 second rule', text: 'AI must be invocable in under 2 seconds from ANY context. If it takes longer, you won\'t use it.', priority: 'medium' },
+          { title: 'Raycast + Claude', text: 'Raycast has Claude integration. Cmd+Space -> type question -> get answer without leaving current app.', priority: 'low' }
+        ],
+        prompt: `Set up quick access to AI — the <2 second rule.
+
+Goal: from ANY context (browser, email, Figma), invoke AI in under 2 seconds.
+
+Option 1: Raycast (recommended for Mac)
+- Install: https://raycast.com
+- Enable: AI extension (Claude or GPT)
+- Shortcut: Cmd+Space -> type query
+- Bonus: create Raycast scripts for common POS actions
+
+Option 2: Keyboard shortcuts
+- Claude Code: assign global hotkey to open terminal + claude
+- Obsidian: Cmd+O for quick file access
+- Custom: Automator/Shortcuts for specific workflows
+
+Option 3: Spotlight + Automator
+- Create Automator quick actions for common tasks
+- Assign keyboard shortcuts
+
+Test: time yourself. Open stopwatch, try to invoke AI.
+If >2 seconds: optimize. The speed determines adoption.
+If <2 seconds: you're set.`
+      }
+    ]
+  }
+];
+
+// ──────────────────────────────────────────────────
+// PRESETS
+// ──────────────────────────────────────────────────
+
+const PRESETS = [
+  {
+    id: 'blank', name: 'Blank Slate', desc: 'Everything at zero — start fresh',
+    data: {}
+  },
+  {
+    id: 'base', name: 'BASE MVP', desc: 'CLAUDE.md + 1 skill = working POS',
+    data: {
+      'claude-code': { s: 3 }, 'terminal': { s: 2 }, 'obsidian-app': { s: 2 },
+      'claude-md': { s: 3 }, 'naming': { s: 3 }, 'vault': { s: 2 },
+      'first-skill': { s: 3 }
+    }
+  },
+  {
+    id: 'mid', name: 'MID POS', desc: 'Vault + MCP + 2-3 skills',
+    data: {
+      'claude-code': { s: 4 }, 'terminal': { s: 3 }, 'obsidian-app': { s: 3 },
+      'voice': { s: 2 }, 'shortcuts': { s: 2 },
+      'claude-md': { s: 4 }, 'naming': { s: 4 }, 'vault': { s: 3 },
+      'agents-md': { s: 3 }, 'memory': { s: 2 },
+      'mcp-servers': { s: 3 }, 'hooks': { s: 2 },
+      'first-skill': { s: 4 }, 'meta-skills': { s: 3 }, 'pipelines': { s: 2 },
+      'evals': { s: 2 }, 'context-mgmt': { s: 2 }
+    }
+  },
+  {
+    id: 'advanced', name: 'Full POS', desc: 'All layers mature',
+    data: {
+      'claude-code': { s: 4 }, 'terminal': { s: 4 }, 'obsidian-app': { s: 4 },
+      'voice': { s: 4 }, 'shortcuts': { s: 3 },
+      'claude-md': { s: 4 }, 'naming': { s: 4 }, 'vault': { s: 4 },
+      'agents-md': { s: 4 }, 'memory': { s: 4 },
+      'mcp-servers': { s: 4 }, 'hooks': { s: 3 }, 'subagents': { s: 3 },
+      'context-protocol': { s: 4 },
+      'first-skill': { s: 4 }, 'meta-skills': { s: 4 }, 'pipelines': { s: 4 },
+      'skill-factory': { s: 3 }, 'scheduled': { s: 3 },
+      'shared-vault': { s: 3 }, 'role-cards': { s: 3 }, 'team-skills': { s: 2 },
+      'comm-style': { s: 3 },
+      'evals': { s: 4 }, 'context-mgmt': { s: 4 }, 'audit': { s: 3 },
+      'reflect': { s: 3 }
+    }
+  },
+  {
+    id: 'sample', name: 'Sample PRD', desc: 'Typical starting point — everything planned',
+    data: {
+      'claude-code': { s: 1 }, 'terminal': { s: 1 }, 'obsidian-app': { s: 1 },
+      'voice': { s: 1 }, 'shortcuts': { s: 1 },
+      'claude-md': { s: 1 }, 'naming': { s: 1 }, 'vault': { s: 1 },
+      'agents-md': { s: 1 }, 'memory': { s: 0 },
+      'mcp-servers': { s: 0 }, 'hooks': { s: 0 }, 'subagents': { s: 0 },
+      'context-protocol': { s: 0 },
+      'first-skill': { s: 1 }, 'meta-skills': { s: 1 }, 'pipelines': { s: 1 },
+      'skill-factory': { s: 0 }, 'scheduled': { s: 1 },
+      'shared-vault': { s: 0 }, 'role-cards': { s: 0 }, 'team-skills': { s: 0 },
+      'comm-style': { s: 1 },
+      'evals': { s: 1 }, 'context-mgmt': { s: 1 }, 'audit': { s: 0 },
+      'reflect': { s: 0 }
+    }
+  }
+];
+
+// ──────────────────────────────────────────────────
+// STATE
+// ──────────────────────────────────────────────────
+
+let state = {
+  selectedBlock: null,
+  activePreset: null,
+  blocks: {}
+};
+
+// Initialize block states
+LAYERS.forEach(layer => {
+  layer.blocks.forEach(block => {
+    state.blocks[block.id] = { status: block.status, autonomy: block.autonomy || 0 };
+  });
+});
+
+// ──────────────────────────────────────────────────
+// RENDER
+// ──────────────────────────────────────────────────
+
+function getBlock(id) {
+  for (const layer of LAYERS) {
+    for (const block of layer.blocks) {
+      if (block.id === id) return { block, layer };
+    }
+  }
+  return null;
+}
+
+function calcLayerScore(layer) {
+  let total = 0;
+  layer.blocks.forEach(b => { total += state.blocks[b.id].status; });
+  return total;
+}
+
+function calcLayerMax(layer) {
+  return layer.blocks.length * 4;
+}
+
+function calcTotalScore() {
+  let total = 0;
+  LAYERS.forEach(layer => {
+    layer.blocks.forEach(b => { total += state.blocks[b.id].status; });
+  });
+  return total;
+}
+
+function calcMaxScore() {
+  let total = 0;
+  LAYERS.forEach(layer => { total += layer.blocks.length * 4; });
+  return total;
+}
+
+function getTier(score) {
+  const pct = score / calcMaxScore() * 100;
+  if (pct >= 70) return { name: 'ADVANCED', cls: 'tier-advanced' };
+  if (pct >= 40) return { name: 'MID', cls: 'tier-mid' };
+  if (pct >= 15) return { name: 'BASE', cls: 'tier-base' };
+  return { name: 'NO POS', cls: 'tier-none' };
+}
+
+function renderPresets() {
+  const container = document.getElementById('presets-container');
+  container.innerHTML = PRESETS.map(p => `
+    <button class="preset-btn ${state.activePreset === p.id ? 'active' : ''}" onclick="applyPreset('${p.id}')">
+      ${p.name}
+      <span class="preset-desc">${p.desc}</span>
+    </button>
+  `).join('');
+}
+
+function renderLayerScores() {
+  const container = document.getElementById('layer-scores');
+  container.innerHTML = LAYERS.map(layer => {
+    const score = calcLayerScore(layer);
+    const max = calcLayerMax(layer);
+    const pct = max > 0 ? (score / max * 100) : 0;
+    const color = pct >= 70 ? 'var(--accent-teal)' : pct >= 40 ? 'var(--accent-blue)' : pct > 0 ? 'var(--accent-amber)' : 'var(--text-dim)';
+    return `
+      <div class="layer-score" onclick="scrollToLayer('${layer.id}')">
+        <span class="layer-label">${layer.code}</span>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${pct}%; background:${color}"></div>
+        </div>
+        <span class="score-num">${score}/${max}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDiagram() {
+  const area = document.getElementById('diagram-area');
+  area.innerHTML = LAYERS.map(layer => `
+    <div class="layer-row" id="layer-${layer.id}">
+      <div class="layer-label-col">${layer.code}</div>
+      <div class="layer-name-col">
+        <div class="l-name">${layer.name}</div>
+        <div class="l-desc">${layer.desc}</div>
+      </div>
+      <div class="blocks-col">
+        ${layer.blocks.map(block => {
+          const bs = state.blocks[block.id];
+          const selected = state.selectedBlock === block.id;
+          return `
+            <div class="block-card ${selected ? 'selected' : ''}"
+                 data-status="${bs.status}"
+                 onclick="selectBlock('${block.id}')">
+              <div class="block-name">
+                <div class="block-status-dot"></div>
+                ${block.name}
+              </div>
+              <div class="block-desc">${STATUS_LABELS[bs.status]}${bs.autonomy > 0 ? ' / L' + bs.autonomy : ''}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderDetail() {
+  if (!state.selectedBlock) {
+    document.getElementById('empty-state').style.display = 'flex';
+    document.getElementById('detail-content').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('detail-content').style.display = 'flex';
+  document.getElementById('detail-content').style.flexDirection = 'column';
+  document.getElementById('detail-content').style.height = '100%';
+
+  const { block, layer } = getBlock(state.selectedBlock);
+  const bs = state.blocks[block.id];
+
+  document.getElementById('detail-title').textContent = block.name;
+  document.getElementById('detail-layer').textContent = `${layer.code} ${layer.name}`;
+  document.getElementById('detail-desc').textContent = block.desc;
+
+  // Status selector
+  const statusEl = document.getElementById('status-selector');
+  statusEl.innerHTML = STATUS_LABELS.map((label, i) => `
+    <button class="status-option ${bs.status === i ? 'active' : ''}"
+            onclick="setStatus('${block.id}', ${i})"
+            style="${bs.status === i ? 'border-color:' + STATUS_COLORS[i] + '; color:' + STATUS_COLORS[i] : ''}">
+      ${label}
+    </button>
+  `).join('');
+
+  // Autonomy selector
+  const autoEl = document.getElementById('autonomy-selector');
+  autoEl.innerHTML = [0,1,2,3].map(l => `
+    <div class="autonomy-level ${bs.autonomy === l ? 'active-l' + l : ''}"
+         onclick="setAutonomy('${block.id}', ${l})">L${l}</div>
+  `).join('');
+
+  // Suggestions
+  const sugEl = document.getElementById('suggestions-list');
+  sugEl.innerHTML = block.suggestions.map(s => `
+    <div class="suggestion-card priority-${s.priority}">
+      <div class="sug-title">${s.title}</div>
+      <div class="sug-text">${s.text}</div>
+    </div>
+  `).join('');
+
+  // Block prompt
+  document.getElementById('block-prompt').textContent = block.prompt;
+}
+
+function renderHeader() {
+  const score = calcTotalScore();
+  const max = calcMaxScore();
+  const pct = Math.round(score / max * 100);
+  const tier = getTier(score);
+
+  document.getElementById('total-score').textContent = `${score} / ${max}`;
+  document.getElementById('pct-display').textContent = `${pct}%`;
+
+  const badge = document.getElementById('tier-badge');
+  badge.textContent = tier.name;
+  badge.className = `tier-badge ${tier.cls}`;
+}
+
+function renderMainPrompt() {
+  const weakBlocks = [];
+  const priorities = [];
+
+  LAYERS.forEach(layer => {
+    layer.blocks.forEach(block => {
+      const bs = state.blocks[block.id];
+      if (bs.status < 2) {
+        weakBlocks.push({ block, layer, status: bs.status });
+      }
+    });
+  });
+
+  // Sort: lower layers first, then by status (lowest first)
+  const layerOrder = { l1: 0, l2: 1, l3: 2, l4: 3, l5: 4, l6: 5 };
+  weakBlocks.sort((a, b) => {
+    const lo = layerOrder[a.layer.id] - layerOrder[b.layer.id];
+    if (lo !== 0) return lo;
+    return a.status - b.status;
+  });
+
+  const total = calcTotalScore();
+  const tier = getTier(total);
+
+  if (weakBlocks.length === 0) {
+    document.getElementById('main-prompt').textContent =
+      'All blocks are at "In Progress" or higher. Your POS is operational. Focus on moving blocks from Working to Mature.';
+    return;
+  }
+
+  const top5 = weakBlocks.slice(0, 5);
+  let prompt = `My POS is at ${tier.name} tier (${total}/${calcMaxScore()}).\n\nPriority gaps to address (in order):\n\n`;
+
+  top5.forEach((item, i) => {
+    const statusLabel = STATUS_LABELS[item.status];
+    prompt += `${i + 1}. [${item.layer.code}] ${item.block.name} — ${statusLabel}\n`;
+    prompt += `   ${item.block.suggestions[0]?.text || item.block.desc}\n\n`;
+  });
+
+  prompt += `Start with #1. Each block should be working before moving to the next.\n`;
+  prompt += `Principle: "Start with one skill, not Jarvis." Build foundation (L1-L2) before automation (L3-L4).`;
+
+  document.getElementById('main-prompt').textContent = prompt;
+}
+
+function renderAll() {
+  renderPresets();
+  renderLayerScores();
+  renderDiagram();
+  renderDetail();
+  renderHeader();
+  renderMainPrompt();
+}
+
+// ──────────────────────────────────────────────────
+// ACTIONS
+// ──────────────────────────────────────────────────
+
+function selectBlock(id) {
+  state.selectedBlock = id;
+  renderAll();
+}
+
+function setStatus(blockId, status) {
+  state.blocks[blockId].status = status;
+  renderAll();
+}
+
+function setAutonomy(blockId, level) {
+  state.blocks[blockId].autonomy = level;
+  renderAll();
+}
+
+function applyPreset(presetId) {
+  const preset = PRESETS.find(p => p.id === presetId);
+  if (!preset) return;
+
+  state.activePreset = presetId;
+
+  // Reset all to 0
+  Object.keys(state.blocks).forEach(id => {
+    state.blocks[id] = { status: 0, autonomy: 0 };
+  });
+
+  // Apply preset data
+  Object.entries(preset.data).forEach(([id, data]) => {
+    if (state.blocks[id]) {
+      state.blocks[id].status = data.s || 0;
+      state.blocks[id].autonomy = data.a || 0;
+    }
+  });
+
+  renderAll();
+}
+
+function scrollToLayer(layerId) {
+  const el = document.getElementById(`layer-${layerId}`);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function copyBlockPrompt() {
+  if (!state.selectedBlock) return;
+  const { block } = getBlock(state.selectedBlock);
+  navigator.clipboard.writeText(block.prompt).then(() => {
+    const btn = document.querySelector('.detail-body .copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy block prompt'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+function copyMainPrompt() {
+  const text = document.getElementById('main-prompt').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-main-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ──────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────
+
+renderAll();
+// Default: load Sample PRD preset
+applyPreset('sample');
+</script>
+
+</body>
+</html>
