@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Mindset Lab — Project Directory</title>
+<meta property="og:title" content="AI Mindset Lab — Project Directory">
+<meta property="og:description" content="All interactive tools, explorers, and artifacts from AI-Native Organizations Sprint and POS Sprint">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0d1117;--s:#161b22;--s2:#1c2129;--b:#30363d;--b2:#484f58;
+  --t:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --teal:#4dc9d4;--teal-bg:rgba(77,201,212,0.08);
+  --blue:#58a6ff;--purple:#bc8cff;--green:#3fb950;
+  --orange:#d29922;--pink:#f778ba;--red:#f85149;
+  --mono:'IBM Plex Mono','SF Mono','JetBrains Mono',monospace;
+  --sans:'Space Grotesk',-apple-system,system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--t);font-family:var(--mono);font-size:13px;line-height:1.6}
+
+.terminal{background:var(--s);border:1px solid var(--b);border-radius:10px;margin:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.tbar{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#21262d;border-bottom:1px solid var(--b)}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.ttitle{flex:1;text-align:center;color:var(--t2);font-size:12px}
+
+.header{padding:28px 32px 20px;border-bottom:1px solid var(--b)}
+.header h1{font-family:var(--sans);font-size:22px;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px}
+.header h1 span{color:var(--teal)}
+.header-sub{font-size:12px;color:var(--t2);max-width:700px;line-height:1.6}
+.header-sub strong{color:var(--teal)}
+
+.stats{display:flex;gap:24px;padding:14px 32px;border-bottom:1px solid var(--b);font-size:11px;color:var(--t2);flex-wrap:wrap}
+.stats .n{color:var(--t);font-weight:600;font-size:16px;font-family:var(--sans)}
+
+.filters{display:flex;flex-wrap:wrap;gap:6px;padding:12px 32px;border-bottom:1px solid var(--b)}
+.filter{font-size:11px;padding:5px 14px;border-radius:14px;border:1px solid var(--b);color:var(--t3);cursor:pointer;transition:all .15s;background:transparent;font-family:var(--mono)}
+.filter:hover{border-color:var(--t2);color:var(--t2)}
+.filter.active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg)}
+
+.content{padding:20px 32px 32px}
+
+.section{margin-bottom:28px}
+.section-head{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.section-head::after{content:'';flex:1;height:1px;background:var(--b)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+
+.card{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:block}
+.card:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,0.3)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transition:opacity .2s;opacity:0}
+.card:hover::before{opacity:1}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.card-name{font-size:14px;font-weight:600;font-family:var(--sans)}
+.card-badges{display:flex;gap:4px;flex-shrink:0}
+.badge{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
+.badge-live{border:1px solid rgba(63,185,80,0.3);color:var(--green);background:rgba(63,185,80,0.08)}
+.badge-public{border:1px solid rgba(88,166,255,0.3);color:var(--blue);background:rgba(88,166,255,0.06)}
+.badge-private{border:1px solid var(--b);color:var(--t3);background:rgba(255,255,255,0.02)}
+.badge-new{border:1px solid rgba(247,120,186,0.3);color:var(--pink);background:rgba(247,120,186,0.06)}
+
+.card-desc{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:10px}
+.card-links{display:flex;gap:8px;flex-wrap:wrap}
+.card-link{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--b);color:var(--t2);text-decoration:none;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
+.card-link:hover{border-color:var(--teal);color:var(--teal)}
+.card-link.primary{border-color:rgba(77,201,212,0.3);color:var(--teal);background:var(--teal-bg)}
+.card-date{font-size:10px;color:var(--t3);margin-top:8px}
+
+.footer{padding:14px 32px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--t3);flex-wrap:wrap;gap:8px}
+.footer a{color:var(--teal);text-decoration:none}
+.footer a:hover{text-decoration:underline}
+
+@media(max-width:700px){
+  .terminal{margin:8px}
+  .header,.content,.filters,.stats,.footer{padding-left:16px;padding-right:16px}
+  .grid{grid-template-columns:1fr}
+}
+
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--s)}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
+.card{animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="terminal">
+  <div class="tbar">
+    <div class="dot r"></div>
+    <div class="dot y"></div>
+    <div class="dot g"></div>
+    <div class="ttitle">ai-mindset-org &mdash; project directory &mdash; AI-Native Sprint s2</div>
+  </div>
+
+  <div class="header">
+    <h1><span>&gt;</span> Project Directory</h1>
+    <p class="header-sub">
+      Все интерактивные инструменты, explorers и артефакты из <strong>AI-Native Organizations Sprint</strong> и <strong>POS Sprint</strong>.
+      Собраны из <strong>ai-mindset-org</strong> GitHub — public и internal проекты.
+    </p>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="filters" id="filters"></div>
+  <div class="content" id="content"></div>
+
+  <div class="footer">
+    <span>AI Mindset &middot; March 2026</span>
+    <span><a href="https://github.com/ai-mindset-org" target="_blank">GitHub org</a> &middot; <a href="index.html">POS Assessment</a></span>
+  </div>
+</div>
+
+<script>
+const projects = [
+  // ─── SPRINT ARTIFACTS (interactive, public, with Pages) ───
+  {
+    name: 'POS Stack Assessment',
+    repo: 'pos-assessment',
+    desc: 'Interactive playbook для построения Personal Operating System. 6 layers, 24 blocks, implementation prompts. Методология POS Sprint.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/pos-assessment/',
+    github: 'https://github.com/ai-mindset-org/pos-assessment',
+    pages: ['index.html', 'directory.html'],
+    color: '#4dc9d4',
+    public: true,
+    updated: '2026-03-27',
+    tags: ['assessment', 'playbook', 'layers'],
+  },
+  {
+    name: 'AI-Native Lab — Knowledge Graph',
+    repo: 'ainative-lab',
+    desc: 'Интерактивный 2D knowledge graph лаборатории. Спикеры, сессии, концепции, ресурсы — всё связано. Canvas с поиском и фильтрами.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/ainative-lab/',
+    github: 'https://github.com/ai-mindset-org/ainative-lab',
+    pages: ['index.html', 'rules.html'],
+    color: '#4dc9d4',
+    public: true,
+    updated: '2026-03-27',
+    tags: ['knowledge-graph', 'speakers', 'canvas'],
+    isNew: true,
+  },
+  {
+    name: 'POS Rules & Skills Explorer',
+    repo: 'ainative-lab',
+    desc: '19 правил и 10 core skills системы. Как naming convention, context protocol, eval system и другие правила сложились органически.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/ainative-lab/rules.html',
+    github: 'https://github.com/ai-mindset-org/ainative-lab',
+    pages: ['rules.html'],
+    color: '#3fb950',
+    public: true,
+    updated: '2026-03-27',
+    tags: ['rules', 'skills', 'CLAUDE.md'],
+    isNew: true,
+  },
+  {
+    name: 'POS Stack Explorer',
+    repo: 'pos-stack-explorer',
+    desc: 'Interactive explorer production POS. 6 слоёв стека, компоненты, connections map, naming convention tool. Лекция 2 — "how".',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/pos-stack-explorer/',
+    github: 'https://github.com/ai-mindset-org/pos-stack-explorer',
+    pages: ['index.html', 'naming.html'],
+    color: '#58a6ff',
+    public: true,
+    updated: '2026-03-25',
+    tags: ['stack', 'layers', 'naming', 'MCP'],
+  },
+  {
+    name: 'Naming Convention Tool',
+    repo: 'pos-stack-explorer',
+    desc: 'Interactive tool для naming convention — собирает имя файла по формату {project} {type} description – YYYY-MM-DD.md. Gallery примеров.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/pos-stack-explorer/naming.html',
+    github: 'https://github.com/ai-mindset-org/pos-stack-explorer',
+    pages: ['naming.html'],
+    color: '#d29922',
+    public: true,
+    updated: '2026-03-25',
+    tags: ['naming', 'convention', 'tool'],
+  },
+  {
+    name: 'Team Stack Explorer',
+    repo: 'team-stack-explorer',
+    desc: 'Explorer инфраструктуры команды AI Mindset: 40+ skills, 2 бота, 8 MCP серверов, skill inheritance, symlink архитектура.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/team-stack-explorer/',
+    github: 'https://github.com/ai-mindset-org/team-stack-explorer',
+    pages: ['index.html'],
+    color: '#bc8cff',
+    public: true,
+    updated: '2026-03-25',
+    tags: ['team', 'skills', 'bots', 'MCP'],
+  },
+  {
+    name: 'AI-Native Deck Builder',
+    repo: 'ainative-deck',
+    desc: 'Presentation builder с block system, drag-and-drop, AI generation, undo/redo, layout picker. Editable slides с GitHub persistence.',
+    cat: 'sprint',
+    live: 'https://ai-mindset-org.github.io/ainative-deck/',
+    github: 'https://github.com/ai-mindset-org/ainative-deck',
+    pages: ['index.html'],
+    color: '#f778ba',
+    public: true,
+    updated: '2026-03-25',
+    tags: ['presentation', 'slides', 'AI-generation'],
+  },
+
+  // ─── PRODUCTS & LANDINGS ───
+  {
+    name: 'Founder OS Landing',
+    repo: 'fos-landing',
+    desc: 'Landing page для Founder OS программы. Teal-grid design system, responsive, IBM Plex Mono + Space Grotesk.',
+    cat: 'product',
+    github: 'https://github.com/ai-mindset-org/fos-landing',
+    color: '#4dc9d4',
+    public: true,
+    updated: '2026-02-23',
+    tags: ['landing', 'FOS', 'teal-grid'],
+  },
+  {
+    name: 'POS Sprint',
+    repo: 'pos-sprint',
+    desc: 'Материалы POS Sprint (s1, March 2–14). Методология, блоки, задания, результаты участников.',
+    cat: 'product',
+    github: 'https://github.com/ai-mindset-org/pos-sprint',
+    color: '#3fb950',
+    public: true,
+    updated: '2026-03-12',
+    tags: ['sprint', 'methodology', 'POS'],
+  },
+
+  // ─── VISUAL TOOLS ───
+  {
+    name: 'Visual Toolkit',
+    repo: 'aim-visual-toolkit',
+    desc: 'Swiss Design visual metaphors для AI education. Генерация аналоговых конструктивистских иллюстраций.',
+    cat: 'visual',
+    github: 'https://github.com/ai-mindset-org/aim-visual-toolkit',
+    color: '#d29922',
+    public: true,
+    updated: '2026-02-09',
+    tags: ['swiss-design', 'metaphors', 'visual'],
+  },
+  {
+    name: 'Block Type Generator',
+    repo: 'ai-mindset-block-type-generator',
+    desc: 'Single-page app для создания brutalist block typography. Brand identity AI Mindset.',
+    cat: 'visual',
+    github: 'https://github.com/ai-mindset-org/ai-mindset-block-type-generator',
+    color: '#f85149',
+    public: true,
+    updated: '2026-01-22',
+    tags: ['typography', 'brutalist', 'brand'],
+  },
+  {
+    name: 'Brand Generator',
+    repo: 'aim-brand-generator',
+    desc: 'AI Mindset Visual Creator v5.5 — brand visuals, metaphors, backgrounds.',
+    cat: 'visual',
+    github: 'https://github.com/ai-mindset-org/aim-brand-generator',
+    color: '#bc8cff',
+    public: false,
+    updated: '2026-02-25',
+    tags: ['brand', 'generator', 'backgrounds'],
+  },
+  {
+    name: 'Instagram Carousels',
+    repo: 'aim-ig-carousels',
+    desc: 'Генератор Instagram карусельных постов. 7 стилей (brutalist, collage, editorial, ainative-teal, lab-x26).',
+    cat: 'visual',
+    github: 'https://github.com/ai-mindset-org/aim-ig-carousels',
+    color: '#f778ba',
+    public: false,
+    updated: '2026-03-18',
+    tags: ['instagram', 'carousels', 'styles'],
+  },
+
+  // ─── INFRASTRUCTURE ───
+  {
+    name: 'AI Mindset LMS',
+    repo: 'aim-lms',
+    desc: 'Knowledge Base для W26 Lab — React + Vite + TypeScript. Материалы лабораторий, прогресс участников.',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/aim-lms',
+    color: '#58a6ff',
+    public: false,
+    updated: '2026-03-27',
+    tags: ['LMS', 'React', 'lab'],
+    isNew: true,
+  },
+  {
+    name: 'AI Mindset Website',
+    repo: 'ai-mindset-website',
+    desc: 'Основной сайт aimindset.org.',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/ai-mindset-website',
+    color: '#4dc9d4',
+    public: false,
+    updated: '2026-03-26',
+    tags: ['website', 'main'],
+  },
+  {
+    name: 'Team Vault Backup',
+    repo: 'team-vault-backup',
+    desc: 'Бэкап командного Obsidian vault (ai-mindset-2026).',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/team-vault-backup',
+    color: '#d29922',
+    public: false,
+    updated: '2026-02-09',
+    tags: ['backup', 'vault', 'obsidian'],
+  },
+  {
+    name: 'Linear Project Cloner',
+    repo: 'clone-templated-project',
+    desc: 'Утилита для копирования задач между проектами Linear с сохранением иерархии.',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/clone-templated-project',
+    color: '#3fb950',
+    public: false,
+    updated: '2026-01-26',
+    tags: ['Linear', 'automation', 'utility'],
+  },
+  {
+    name: 'Audience Analysis',
+    repo: 'ai-audience-analysis',
+    desc: 'Анализ аудитории AI Mindset.',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/ai-audience-analysis',
+    color: '#bc8cff',
+    public: false,
+    updated: '2026-01-09',
+    tags: ['analytics', 'audience'],
+  },
+  {
+    name: 'Data Preprocessor',
+    repo: 'ai-mindset-data-preprocessor',
+    desc: 'Предобработка данных для аналитики и контента.',
+    cat: 'infra',
+    github: 'https://github.com/ai-mindset-org/ai-mindset-data-preprocessor',
+    color: '#f85149',
+    public: false,
+    updated: '2026-01-13',
+    tags: ['data', 'preprocessing'],
+  },
+];
+
+const catLabels = {
+  all: 'all',
+  sprint: 'sprint artifacts',
+  product: 'products',
+  visual: 'visual tools',
+  infra: 'infrastructure',
+};
+
+const catDescriptions = {
+  sprint: 'Интерактивные инструменты из AI-Native Sprint (s2, March 24+) и POS Sprint (s1, March 2–14)',
+  product: 'Лендинги и материалы продуктов',
+  visual: 'Генераторы визуального контента и brand-инструменты',
+  infra: 'Внутренняя инфраструктура, LMS, утилиты',
+};
+
+let activeFilter = 'all';
+
+function render() {
+  const publicCount = projects.filter(p => p.public).length;
+  const liveCount = projects.filter(p => p.live).length;
+  const recentCount = projects.filter(p => p.updated >= '2026-03-20').length;
+
+  document.getElementById('stats').innerHTML = `
+    <div><span class="n">${projects.length}</span> projects</div>
+    <div><span class="n">${liveCount}</span> live (Pages)</div>
+    <div><span class="n">${publicCount}</span> public</div>
+    <div><span class="n">${projects.length - publicCount}</span> private</div>
+    <div><span class="n">${recentCount}</span> updated this week</div>
+  `;
+
+  const catCounts = {};
+  projects.forEach(p => { catCounts[p.cat] = (catCounts[p.cat] || 0) + 1; });
+
+  document.getElementById('filters').innerHTML = `
+    <button class="filter ${activeFilter==='all'?'active':''}" onclick="setFilter('all')">all (${projects.length})</button>
+    ${Object.entries(catLabels).filter(([k]) => k !== 'all').map(([k, label]) =>
+      `<button class="filter ${activeFilter===k?'active':''}" onclick="setFilter('${k}')">${label} (${catCounts[k] || 0})</button>`
+    ).join('')}
+  `;
+
+  const filtered = activeFilter === 'all' ? projects : projects.filter(p => p.cat === activeFilter);
+
+  // Group by category
+  const grouped = {};
+  filtered.forEach(p => {
+    const cat = catLabels[p.cat] || p.cat;
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(p);
+  });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(grouped)) {
+    const catKey = Object.entries(catLabels).find(([,v]) => v === cat)?.[0];
+    const desc = catDescriptions[catKey] || '';
+    if (Object.keys(grouped).length > 1) {
+      html += `<div class="section"><div class="section-head">${cat}${desc ? ` &mdash; <span style="text-transform:none;letter-spacing:0;font-size:11px;color:var(--t3)">${desc}</span>` : ''}</div>`;
+    }
+    html += '<div class="grid">';
+    items.forEach(p => {
+      const badges = [];
+      if (p.live) badges.push('<span class="badge badge-live">live</span>');
+      if (p.public) badges.push('<span class="badge badge-public">public</span>');
+      if (!p.public) badges.push('<span class="badge badge-private">private</span>');
+      if (p.isNew) badges.push('<span class="badge badge-new">new</span>');
+
+      const links = [];
+      if (p.live) {
+        links.push(`<a class="card-link primary" href="${p.live}" target="_blank">open live</a>`);
+      }
+      links.push(`<a class="card-link" href="${p.github}" target="_blank">github</a>`);
+      if (p.pages && p.pages.length > 1) {
+        p.pages.forEach(page => {
+          if (page !== 'index.html' && page !== 'directory.html') {
+            const liveBase = p.live || `https://ai-mindset-org.github.io/${p.repo}/`;
+            links.push(`<a class="card-link" href="${liveBase.replace(/\\/+$/,'')}/${page}" target="_blank">${page.replace('.html','')}</a>`);
+          }
+        });
+      }
+
+      html += `
+        <div class="card" style="--card-color:${p.color}">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${p.color};opacity:0.6"></div>
+          <div class="card-top">
+            <div class="card-name">${p.name}</div>
+            <div class="card-badges">${badges.join('')}</div>
+          </div>
+          <div class="card-desc">${p.desc}</div>
+          <div class="card-links">${links.join('')}</div>
+          <div class="card-date">${p.repo} &middot; updated ${p.updated}</div>
+        </div>
+      `;
+    });
+    html += '</div></div>';
+  }
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function setFilter(f) { activeFilter = f; render(); }
+
+render();
+</script>
+</body>
+</html>
