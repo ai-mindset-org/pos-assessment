@@ -3,202 +3,335 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Mindset Lab — Project Directory</title>
-<meta property="og:title" content="AI Mindset Lab — Project Directory">
-<meta property="og:description" content="All interactive tools from AI-Native Sprint and POS Sprint — explorers, builders, workshops">
-<meta property="og:type" content="website">
+<title>AI-Native Sprint — Week 1 Dashboard</title>
+<meta property="og:title" content="AI-Native Sprint s2 — Week 1 Dashboard">
+<meta property="og:description" content="Все материалы первой недели: лекция Гершуни, воркшоп Поваляева, интерактивные инструменты, homework">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0d1117;--s:#161b22;--b:#30363d;--b2:#484f58;--t:#e6edf3;--t2:#8b949e;--t3:#484f58;--teal:#4dc9d4;--tbg:rgba(77,201,212,.08);--blue:#58a6ff;--purple:#bc8cff;--green:#3fb950;--orange:#d29922;--pink:#f778ba;--red:#f85149;--mono:'IBM Plex Mono','SF Mono',monospace;--sans:'Space Grotesk',-apple-system,sans-serif}
+:root{--bg:#0d1117;--s:#161b22;--s2:#1c2129;--b:#30363d;--b2:#484f58;--t:#e6edf3;--t2:#8b949e;--t3:#484f58;--teal:#4dc9d4;--tbg:rgba(77,201,212,.08);--blue:#58a6ff;--purple:#bc8cff;--green:#3fb950;--orange:#d29922;--pink:#f778ba;--red:#f85149;--mono:'IBM Plex Mono','SF Mono',monospace;--sans:'Space Grotesk',-apple-system,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--t);font-family:var(--mono);font-size:13px;line-height:1.6}
-.wrap{background:var(--s);border:1px solid var(--b);border-radius:10px;margin:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.4)}
-.tbar{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#21262d;border-bottom:1px solid var(--b)}
+a{color:var(--teal);text-decoration:none}a:hover{text-decoration:underline}
+.w{background:var(--s);border:1px solid var(--b);border-radius:10px;margin:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.tb{display:flex;align-items:center;gap:8px;padding:10px 16px;background:#21262d;border-bottom:1px solid var(--b)}
 .d{width:12px;height:12px;border-radius:50%}.d.r{background:#ff5f57}.d.y{background:#febc2e}.d.g{background:#28c840}
 .tt{flex:1;text-align:center;color:var(--t2);font-size:12px}
+
+/* Header */
 .hdr{padding:28px 32px 20px;border-bottom:1px solid var(--b)}
-.hdr h1{font-family:var(--sans);font-size:22px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px}
-.hdr h1 span{color:var(--teal)}
+.hdr h1{font-family:var(--sans);font-size:24px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+.hdr h1 em{font-style:normal;color:var(--teal)}
 .hdr p{font-size:12px;color:var(--t2);max-width:700px;line-height:1.6}
-.hdr p strong{color:var(--teal)}
-.stats{display:flex;gap:24px;padding:14px 32px;border-bottom:1px solid var(--b);font-size:11px;color:var(--t2);flex-wrap:wrap}
-.stats .n{color:var(--t);font-weight:600;font-size:16px;font-family:var(--sans)}
-.tabs{display:flex;border-bottom:1px solid var(--b)}
-.tab{padding:12px 24px;font-size:12px;color:var(--t2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
-.tab:hover{color:var(--t);background:rgba(255,255,255,.02)}
-.tab.on{color:var(--teal);border-bottom-color:var(--teal)}
-.tab .tc{font-size:10px;color:var(--t3);margin-left:4px}
-.cnt{padding:20px 32px 32px}
-.sh{display:flex;align-items:center;gap:10px;margin:20px 0 12px;font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
-.sh::after{content:'';flex:1;height:1px;background:var(--b)}
-.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
-a.c{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:18px 20px;transition:all .2s;position:relative;overflow:hidden;text-decoration:none;color:inherit;display:block}
-a.c:hover{border-color:var(--teal);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.3)}
-.c .bar{position:absolute;top:0;left:0;right:0;height:2px;opacity:.6}
-.c .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
-.c .nm{font-size:14px;font-weight:600;font-family:var(--sans)}
-.c .bg{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0}
-.bd{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:500;white-space:nowrap}
-.bd-l{border:1px solid rgba(63,185,80,.3);color:var(--green);background:rgba(63,185,80,.08)}
-.bd-p{border:1px solid rgba(88,166,255,.3);color:var(--blue);background:rgba(88,166,255,.06)}
-.bd-x{border:1px solid var(--b);color:var(--t3)}
-.bd-n{border:1px solid rgba(247,120,186,.3);color:var(--pink);background:rgba(247,120,186,.06)}
-.bd-w{border:1px solid rgba(77,201,212,.3);color:var(--teal);background:var(--tbg)}
-.c .ds{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:8px}
-.c .lk{display:flex;gap:6px;flex-wrap:wrap}
-.lnk{font-size:10px;padding:3px 8px;border-radius:4px;border:1px solid var(--b);color:var(--t2);text-decoration:none;transition:all .15s;display:inline-flex;align-items:center;gap:4px}
-.lnk:hover{border-color:var(--teal);color:var(--teal)}
-.lnk.pr{border-color:rgba(77,201,212,.3);color:var(--teal);background:var(--tbg)}
-.c .dt{font-size:10px;color:var(--t3);margin-top:6px}
+
+/* Nav pills */
+.nav{display:flex;gap:8px;padding:12px 32px;border-bottom:1px solid var(--b);flex-wrap:wrap;align-items:center}
+.nav-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-right:4px}
+.pill{font-size:11px;padding:5px 14px;border-radius:14px;border:1px solid var(--b);color:var(--t2);text-decoration:none;transition:all .15s}
+.pill:hover{border-color:var(--teal);color:var(--teal);text-decoration:none}
+.pill.on{border-color:var(--teal);color:var(--teal);background:var(--tbg)}
+
+/* Content */
+.cnt{padding:24px 32px 32px}
+
+/* Session block */
+.sess{margin-bottom:32px}
+.sess-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.sess-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.sess-title{font-family:var(--sans);font-size:16px;font-weight:600}
+.sess-meta{font-size:11px;color:var(--t3);margin-left:auto}
+.sess-desc{font-size:12px;color:var(--t2);margin-bottom:14px;max-width:700px;line-height:1.5}
+
+/* Card grid */
+.gr{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.c{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:14px 16px;transition:all .2s;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden}
+.c:hover{border-color:var(--teal);transform:translateY(-1px);text-decoration:none}
+.c .bar{position:absolute;top:0;left:0;right:0;height:2px;opacity:.5}
+.c .nm{font-size:13px;font-weight:600;font-family:var(--sans);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.c .nm .tag{font-size:9px;padding:1px 6px;border-radius:3px;font-weight:500}
+.c .ds{font-size:11px;color:var(--t2);line-height:1.4}
+.c .ts{font-size:10px;color:var(--t3);margin-top:6px}
+
+/* Quote */
+.q{background:var(--bg);border-left:2px solid var(--orange);padding:10px 14px;margin:6px 0;border-radius:0 6px 6px 0}
+.q .qt{font-size:12px;color:var(--t2);font-style:italic;line-height:1.5}
+.q .qa{font-size:10px;color:var(--t3);margin-top:4px}
+
+/* Homework */
+.hw{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:16px;margin-top:8px}
+.hw h3{font-size:12px;color:var(--t2);margin-bottom:8px;font-weight:500}
+.hw ul{margin:0;padding-left:18px}
+.hw li{font-size:11px;color:var(--t2);margin-bottom:4px;line-height:1.5}
+.hw li a{color:var(--teal)}
+
+/* Section divider */
+.div{display:flex;align-items:center;gap:10px;margin:28px 0 16px;font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:1px}
+.div::after{content:'';flex:1;height:1px;background:var(--b)}
+
+/* Footer */
 .ft{padding:14px 32px;border-top:1px solid var(--b);display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--t3);flex-wrap:wrap;gap:8px}
-.ft a{color:var(--teal);text-decoration:none}.ft a:hover{text-decoration:underline}
-@media(max-width:700px){.wrap{margin:8px}.hdr,.cnt,.stats,.ft{padding-left:16px;padding-right:16px}.gr{grid-template-columns:1fr}.tabs{overflow-x:auto}}
+
+@media(max-width:700px){.w{margin:8px}.hdr,.cnt,.nav,.ft{padding-left:16px;padding-right:16px}.gr{grid-template-columns:1fr}}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--s)}::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px}
-a.c{animation:fi .25s ease}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.c{animation:fi .2s ease}@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<div class="tbar"><div class="d r"></div><div class="d y"></div><div class="d g"></div><div class="tt">ai-mindset-org — project directory — AI-Native Sprint s2</div></div>
+<div class="w">
+<div class="tb"><div class="d r"></div><div class="d y"></div><div class="d g"></div><div class="tt">AI-Native Organizations Sprint s2 — week 1 dashboard</div></div>
+
 <div class="hdr">
-<h1><span>></span> Project Directory</h1>
-<p>Все инструменты, explorers и артефакты из <strong>AI-Native Sprint</strong> (s2) и <strong>POS Sprint</strong> (s1). Ссылки из <strong>LMS workshop materials</strong> — W1 Personal OS Setup.</p>
+<h1><em>Week 1</em> — Personal OS Setup</h1>
+<p>Все материалы первой недели спринта: лекция Степана Гершуни про AI-трансформацию, воркшоп Поваляева про POS, интерактивные инструменты и homework. 211 участников, 24 марта 2026.</p>
 </div>
-<div class="stats" id="st"></div>
-<div class="tabs" id="tb"></div>
-<div class="cnt" id="cnt"></div>
+
+<div class="nav">
+<span class="nav-label">navigate</span>
+<a class="pill on" href="#lecture">lecture</a>
+<a class="pill" href="#workshop">workshop</a>
+<a class="pill" href="#tools">tools</a>
+<a class="pill" href="#homework">homework</a>
+<a class="pill" href="https://learn.aimindset.org/s2/workshops/s2-w1-setup" target="_blank">LMS</a>
+<a class="pill" href="https://ai-mindset-org.github.io/ainative-lab/" target="_blank">knowledge graph</a>
+<a class="pill" href="index.html">POS assessment</a>
+</div>
+
+<div class="cnt">
+
+<!-- ═══ LECTURE: GERSHUNI ═══ -->
+<div class="sess" id="lecture">
+<div class="sess-hdr">
+<span class="sess-dot" style="background:var(--orange)"></span>
+<span class="sess-title">Лекция: Почему AI-трансформация — самое важное</span>
+<span class="sess-meta">Степан Гершуни &middot; 23 мар &middot; 172 мин</span>
+</div>
+<div class="sess-desc">Дофаминовая и кортизоловая ловушки AI, кейсы Shopify/Block/Spotify/Base44, экспоненциальный рост моделей, фреймворк POS &rarr; Team OS &rarr; Company OS, Harness Engineering.</div>
+
+<div class="gr">
+<a class="c" href="https://ai-native.aimindset.org" target="_blank">
+<div class="bar" style="background:var(--orange)"></div>
+<div class="nm">AI-Native Sprint <span class="tag" style="background:rgba(209,153,34,.15);color:var(--orange)">landing</span></div>
+<div class="ds">Описание программы спринта, структура трёх недель</div>
+</a>
+
+<a class="c" href="https://github.com/Gerstep/ai-native-plugin" target="_blank">
+<div class="bar" style="background:var(--green)"></div>
+<div class="nm">AI-Native Plugin <span class="tag" style="background:rgba(63,185,80,.15);color:var(--green)">github</span></div>
+<div class="ds">Плагин для Claude Code / Codex от Гершуни. Скилл для описания контекста компании</div>
+</a>
+
+<a class="c" href="https://www.codos.ai/quiz" target="_blank">
+<div class="bar" style="background:var(--purple)"></div>
+<div class="nm">AI-Nativeness Quiz <span class="tag" style="background:rgba(188,140,255,.15);color:var(--purple)">tool</span></div>
+<div class="ds">Оценка уровня AI-nativeness: L0 &rarr; L3. Определить текущий уровень команды</div>
+</a>
+
+<a class="c" href="https://cybos.ai/harness" target="_blank">
+<div class="bar" style="background:var(--teal)"></div>
+<div class="nm">Harness Engineering <span class="tag" style="background:var(--tbg);color:var(--teal)">research</span></div>
+<div class="ds">Интерактивный ресерч: LLM + Harness, что модели не могут, обвязка как конкурентное преимущество</div>
+</a>
+
+<a class="c" href="https://openai.com/index/harness-engineering/" target="_blank">
+<div class="bar" style="background:var(--blue)"></div>
+<div class="nm">Harness Engineering — OpenAI</div>
+<div class="ds">Оригинальная статья OpenAI про harness engineering</div>
+</a>
+
+<a class="c" href="https://www.bvp.com/atlas/the-state-of-ai-2025" target="_blank">
+<div class="bar" style="background:var(--t3)"></div>
+<div class="nm">BVP State of AI 2025</div>
+<div class="ds">Bessemer Venture Partners — обзор рынка AI, метрики, тренды</div>
+</a>
+
+<a class="c" href="https://www.emcap.com/thoughts/the-new-language-of-startup-performance" target="_blank">
+<div class="bar" style="background:var(--t3)"></div>
+<div class="nm">New Language of Startup Performance</div>
+<div class="ds">Emergence Capital — revenue per employee как метрика AI-эпохи</div>
+</a>
+
+<a class="c" href="https://www.tbench.ai/" target="_blank">
+<div class="bar" style="background:var(--t3)"></div>
+<div class="nm">TBench.ai</div>
+<div class="ds">Бенчмарк AI-инструментов — сравнение моделей и тулов</div>
+</a>
+</div>
+
+<div class="q" style="margin-top:12px">
+<div class="qt">&laquo;Moat — это не модель. Moat — это человек-оркестратор. Домен + границы, 10–20 лет опыта.&raquo;</div>
+<div class="qa">— Степан Гершуни</div>
+</div>
+</div>
+
+<!-- ═══ WORKSHOP: POVALIAEV ═══ -->
+<div class="sess" id="workshop">
+<div class="sess-hdr">
+<span class="sess-dot" style="background:var(--teal)"></span>
+<span class="sess-title">Воркшоп: Personal OS Setup</span>
+<span class="sess-meta">Александр Поваляев &middot; 24 мар &middot; 161 мин</span>
+</div>
+<div class="sess-desc">Живая демонстрация production POS: naming convention, Claude Code, Obsidian, MCP, скиллы, дашборды. От эргономики клавиатуры до пайплайнов автоматизации.</div>
+
+<div class="gr">
+<a class="c" href="https://ai-mindset-org.github.io/ainative-deck/pos-setup-v2.html" target="_blank">
+<div class="bar" style="background:var(--teal)"></div>
+<div class="nm">Слайды: Personal OS Setup v2 <span class="tag" style="background:var(--tbg);color:var(--teal)">slides</span></div>
+<div class="ds">35+ слайдов — архитектура POS от Layer -1 (keyboard) до Layer 6 (governance). Terminal aesthetic</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/pos-stack-explorer/" target="_blank">
+<div class="bar" style="background:var(--blue)"></div>
+<div class="nm">POS Stack Explorer <span class="tag" style="background:rgba(88,166,255,.15);color:var(--blue)">interactive</span></div>
+<div class="ds">Интерактивная карта реальной POS: 6 слоёв, 50+ скиллов, 7 MCP-серверов, граф связей</div>
+<div class="ts">Момент в сессии: 2:09:28</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/ainative-lab/dashboard-workshop.html" target="_blank">
+<div class="bar" style="background:var(--green)"></div>
+<div class="nm">Dashboard Workshop <span class="tag" style="background:rgba(63,185,80,.15);color:var(--green)">builder</span></div>
+<div class="ds">Собери дашборд за 30 мин: среда &rarr; заметки &rarr; данные &rarr; стиль &rarr; промпт для агента</div>
+<div class="ts">Момент в сессии: 58:34</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/ainative-lab/naming.html" target="_blank">
+<div class="bar" style="background:var(--orange)"></div>
+<div class="nm">Naming Convention Builder <span class="tag" style="background:rgba(209,153,34,.15);color:var(--orange)">builder</span></div>
+<div class="ds">Генератор конвенций: проект + тип &rarr; color-coded превью имени файла. Каталог типов</div>
+<div class="ts">Момент в сессии: 18:00</div>
+</a>
+
+<a class="c" href="https://keyboard.aimindset.org/" target="_blank">
+<div class="bar" style="background:var(--pink)"></div>
+<div class="nm">Keyboard Efficiency <span class="tag" style="background:rgba(247,120,186,.15);color:var(--pink)">tool</span></div>
+<div class="ds">Heatmap стоимости шорткатов, эргономические метрики, ссылки на Karabiner и Raycast</div>
+<div class="ts">Момент в сессии: 7:12</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/ainative-lab/rules.html" target="_blank">
+<div class="bar" style="background:var(--green)"></div>
+<div class="nm">POS Rules & Skills <span class="tag" style="background:rgba(63,185,80,.15);color:var(--green)">explorer</span></div>
+<div class="ds">19 правил и 10 core skills. Как naming convention, eval system и другие правила сложились</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/team-stack-explorer/" target="_blank">
+<div class="bar" style="background:var(--purple)"></div>
+<div class="nm">Team Stack Explorer</div>
+<div class="ds">Инфраструктура команды AI Mindset: 40+ skills, 2 бота, 8 MCP серверов</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/pos-assessment/" target="_blank">
+<div class="bar" style="background:var(--teal)"></div>
+<div class="nm">POS Stack Assessment <span class="tag" style="background:var(--tbg);color:var(--teal)">playbook</span></div>
+<div class="ds">Self-assessment: 6 layers, 24 blocks. Оцени свой текущий стек и получи план</div>
+</a>
+</div>
+
+<div class="q" style="margin-top:12px">
+<div class="qt">&laquo;Главная штука которую я хочу вам сегодня отдать — если вы одно что-то заберёте, заберите naming convention&raquo;</div>
+<div class="qa">— Александр Поваляев</div>
+</div>
+</div>
+
+<!-- ═══ ALL TOOLS ═══ -->
+<div class="div" id="tools">all interactive tools</div>
+
+<div class="gr">
+<a class="c" href="https://ai-mindset-org.github.io/ainative-lab/" target="_blank">
+<div class="bar" style="background:var(--teal)"></div>
+<div class="nm">AI Native Lab — Knowledge Graph <span class="tag" style="background:var(--tbg);color:var(--teal)">hub</span></div>
+<div class="ds">Центральный хаб спринта: спикеры, сессии, концепции, ресурсы — всё связано</div>
+</a>
+
+<a class="c" href="https://ai-mindset-org.github.io/ainative-deck/" target="_blank">
+<div class="bar" style="background:var(--pink)"></div>
+<div class="nm">AI-Native Deck Builder <span class="tag" style="background:rgba(247,120,186,.15);color:var(--pink)">tool</span></div>
+<div class="ds">Presentation builder: drag-and-drop, AI generation, GitHub persistence</div>
+</a>
+
+<a class="c" href="https://learn.aimindset.org/s2/qa/s2-w1-setup" target="_blank">
+<div class="bar" style="background:var(--orange)"></div>
+<div class="nm">Q&A — W1 Setup</div>
+<div class="ds">11 вопросов с воркшопа: Obsidian, безопасность, автономность, с чего начать</div>
+</a>
+
+<a class="c" href="https://learn.aimindset.org/s2/workshops/s2-w1-lecture" target="_blank">
+<div class="bar" style="background:var(--orange)"></div>
+<div class="nm">LMS — Лекция Гершуни</div>
+<div class="ds">Полная страница лекции: видео, chapters, key topics, takeaways, Q&A</div>
+</a>
+
+<a class="c" href="https://learn.aimindset.org/s2/workshops/s2-w1-setup" target="_blank">
+<div class="bar" style="background:var(--teal)"></div>
+<div class="nm">LMS — Воркшоп Поваляева</div>
+<div class="ds">Полная страница воркшопа: видео, 30 chapters, setup guide из 8 шагов</div>
+</a>
+
+<a class="c" href="https://developers.openai.com/codex/config-advanced" target="_blank">
+<div class="bar" style="background:var(--blue)"></div>
+<div class="nm">Codex Advanced Config</div>
+<div class="ds">Подключение сторонних моделей к OpenAI Codex (community link от densmirnov)</div>
+</a>
+</div>
+
+<!-- ═══ HOMEWORK ═══ -->
+<div class="div" id="homework">homework week 1</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="hw">
+<h3 style="color:var(--orange)">Лекция (Гершуни)</h3>
+<ul>
+<li>Установить <a href="https://github.com/Gerstep/ai-native-plugin" target="_blank">aim-skill</a> в Claude Code / Codex — описать контекст компании</li>
+<li>Пройти <a href="https://www.codos.ai/quiz" target="_blank">AI-nativeness квиз</a> — определить уровень L0–L3</li>
+<li>Провести аудит процессов: найти топ-3 приоритета для автоматизации</li>
+<li>Определить AI-чемпионов в команде</li>
+<li>(бонус) Vibe-code SaaS, за который вы платите</li>
+</ul>
+</div>
+
+<div class="hw">
+<h3 style="color:var(--teal)">Воркшоп (Поваляев)</h3>
+<ul>
+<li>Установить агентный инструмент и запустить первый диалог</li>
+<li>Создать naming convention — использовать <a href="https://ai-mindset-org.github.io/ainative-lab/naming.html" target="_blank">Naming Builder</a></li>
+<li>Написать первый CLAUDE.md с базовыми правилами</li>
+<li>Найти 3 рутинных процесса которые бесят</li>
+<li>Попробовать <a href="https://ai-mindset-org.github.io/ainative-lab/dashboard-workshop.html" target="_blank">Dashboard Builder</a></li>
+<li>Найти buddy-партнёра для работы на неделе</li>
+</ul>
+</div>
+</div>
+
+<!-- ═══ KEY TOPICS ═══ -->
+<div class="div">key topics covered</div>
+
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid rgba(209,153,34,.3);color:var(--orange)">Дофаминовая ловушка AI</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid rgba(209,153,34,.3);color:var(--orange)">Shopify/Block/Spotify/Base44</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid rgba(209,153,34,.3);color:var(--orange)">POS &rarr; Team OS &rarr; Company OS</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid rgba(209,153,34,.3);color:var(--orange)">Harness Engineering</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Naming convention</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">CLAUDE.md</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Skills &amp; MCP</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Dashboard</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Content Voice</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Keyboard Efficiency</span>
+<span style="font-size:11px;padding:4px 10px;border-radius:14px;border:1px solid var(--tbg);color:var(--teal)">Obsidian vault</span>
+</div>
+
+<div class="q">
+<div class="qt">&laquo;Докажите, почему ИИ не может это сделать, прежде чем просить новую позицию&raquo;</div>
+<div class="qa">— Тоби Лютке, CEO Shopify</div>
+</div>
+<div class="q" style="margin-top:6px">
+<div class="qt">&laquo;Не создавайте файлы сами. Дайте правила агентам — они создадут структуру и в правильное место положат&raquo;</div>
+<div class="qa">— Александр Поваляев</div>
+</div>
+
+</div>
+
 <div class="ft">
-<span>AI Mindset &middot; March 2026 &middot; from <a href="https://learn.aimindset.org/s2/workshops/s2-w1-setup" target="_blank">S2 W1 Setup</a></span>
-<span><a href="https://github.com/ai-mindset-org" target="_blank">GitHub org</a> &middot; <a href="index.html">POS Assessment</a></span>
+<span>AI-Native Organizations Sprint s2 &middot; AI Mindset &middot; March 2026</span>
+<span><a href="https://learn.aimindset.org" target="_blank">LMS</a> &middot; <a href="https://ai-mindset-org.github.io/ainative-lab/" target="_blank">Lab Hub</a> &middot; <a href="https://github.com/ai-mindset-org" target="_blank">GitHub</a></span>
 </div>
 </div>
-<script>
-var P=[
-// ── W1 WORKSHOP MATERIALS (from LMS s2-w1-setup) ──
-{n:"Slides: Personal OS Setup v2",repo:"ainative-deck",ds:"Интерактивная презентация воркшопа — 35+ слайдов. Архитектура POS от Layer -1 (keyboard) до Layer 6 (governance). Terminal aesthetic.",
-cat:"workshop",cl:"#4dc9d4",live:"https://ai-mindset-org.github.io/ainative-deck/pos-setup-v2.html",gh:"https://github.com/ai-mindset-org/ainative-deck",pub:1,ts:"2026-03-25",tg:["slides","lecture"],ws:"На протяжении всей сессии"},
-
-{n:"POS Stack Explorer",repo:"pos-stack-explorer",ds:"Интерактивная карта реальной POS: 6 слоёв, 50+ скиллов, 7 MCP-серверов, граф связей Skills↔MCP, setup guide из 7 фаз.",
-cat:"workshop",cl:"#58a6ff",live:"https://ai-mindset-org.github.io/pos-stack-explorer/",gh:"https://github.com/ai-mindset-org/pos-stack-explorer",pub:1,ts:"2026-03-25",tg:["stack","layers","MCP"],ws:"2:09:28",
-sub:[{u:"https://ai-mindset-org.github.io/pos-stack-explorer/naming.html",t:"naming tool"}]},
-
-{n:"Dashboard Workshop",repo:"ainative-lab",ds:"Сборка персонального дашборда за 30 мин. 5 шагов: среда → заметки → данные → стиль (3 темы) → контекст. Генерирует промпт для агента.",
-cat:"workshop",cl:"#3fb950",live:"https://ai-mindset-org.github.io/ainative-lab/dashboard-workshop.html",gh:"https://github.com/ai-mindset-org/ainative-lab",pub:1,ts:"2026-03-27",tg:["dashboard","builder"],ws:"58:34",nw:1},
-
-{n:"Naming Convention Builder",repo:"ainative-lab",ds:"Генератор конвенций: выбор проекта, типа → color-coded превью имени файла. Каталог типов, примеры из реальной системы.",
-cat:"workshop",cl:"#d29922",live:"https://ai-mindset-org.github.io/ainative-lab/naming.html",gh:"https://github.com/ai-mindset-org/ainative-lab",pub:1,ts:"2026-03-27",tg:["naming","convention"],ws:"18:00",nw:1},
-
-{n:"AI Native Lab — Hub",repo:"ainative-lab",ds:"Центральная страница спринта: knowledge graph спикеров, сессий, концепций и ресурсов. Canvas с поиском и фильтрами.",
-cat:"workshop",cl:"#4dc9d4",live:"https://ai-mindset-org.github.io/ainative-lab/",gh:"https://github.com/ai-mindset-org/ainative-lab",pub:1,ts:"2026-03-27",tg:["hub","graph"],ws:"1:05:35",
-sub:[{u:"https://ai-mindset-org.github.io/ainative-lab/rules.html",t:"rules & skills"},{u:"https://ai-mindset-org.github.io/ainative-lab/naming.html",t:"naming"},{u:"https://ai-mindset-org.github.io/ainative-lab/dashboard-workshop.html",t:"dashboard"}]},
-
-{n:"Keyboard Efficiency",repo:"keyboard",ds:"Визуализатор эргономической стоимости шорткатов. Heatmap клавиатуры, cost комбинаций, Karabiner/Raycast/Rectangle ссылки.",
-cat:"workshop",cl:"#f778ba",live:"https://keyboard.aimindset.org/",pub:1,ts:"2026-03-24",tg:["keyboard","ergonomics"],ws:"7:12"},
-
-{n:"Codex Advanced Config",repo:"external",ds:"Подключение сторонних моделей к OpenAI Codex. Из community links воркшопа (densmirnov).",
-cat:"workshop",cl:"#bc8cff",live:"https://developers.openai.com/codex/config-advanced",pub:1,ts:"2026-03-24",tg:["Codex","config"]},
-
-{n:"Q&A Workshop Page",repo:"aim-lms",ds:"Вопросы и ответы со всех сессий — 11 вопросов с первого воркшопа. LMS integration.",
-cat:"workshop",cl:"#d29922",live:"https://learn.aimindset.org/s2/qa/s2-w1-setup",pub:0,ts:"2026-03-24",tg:["Q&A","LMS"]},
-
-// ── RULES & SKILLS ──
-{n:"POS Rules & Skills Explorer",repo:"ainative-lab",ds:"19 правил и 10 core skills. Naming convention, context protocol, eval system, telegram style — как правила сложились органически.",
-cat:"rules",cl:"#3fb950",live:"https://ai-mindset-org.github.io/ainative-lab/rules.html",gh:"https://github.com/ai-mindset-org/ainative-lab",pub:1,ts:"2026-03-27",tg:["rules","skills","CLAUDE.md"],nw:1},
-
-{n:"POS Stack Assessment",repo:"pos-assessment",ds:"Interactive playbook: 6 layers, 24 blocks, implementation prompts. Методология POS Sprint — self-assessment.",
-cat:"rules",cl:"#4dc9d4",live:"https://ai-mindset-org.github.io/pos-assessment/",gh:"https://github.com/ai-mindset-org/pos-assessment",pub:1,ts:"2026-03-27",tg:["assessment","playbook"]},
-
-{n:"Team Stack Explorer",repo:"team-stack-explorer",ds:"Инфраструктура команды AI Mindset: 40+ skills, 2 бота, 8 MCP серверов, skill inheritance, symlink архитектура.",
-cat:"rules",cl:"#bc8cff",live:"https://ai-mindset-org.github.io/team-stack-explorer/",gh:"https://github.com/ai-mindset-org/team-stack-explorer",pub:1,ts:"2026-03-25",tg:["team","bots","MCP"]},
-
-// ── PRESENTATIONS ──
-{n:"AI-Native Deck Builder",repo:"ainative-deck",ds:"Presentation builder: block system, drag-and-drop, AI generation, undo/redo, layout picker. Editable slides + GitHub persistence.",
-cat:"tools",cl:"#f778ba",live:"https://ai-mindset-org.github.io/ainative-deck/",gh:"https://github.com/ai-mindset-org/ainative-deck",pub:1,ts:"2026-03-25",tg:["presentation","AI"],
-sub:[{u:"https://ai-mindset-org.github.io/ainative-deck/pos-setup-v2.html",t:"POS Setup slides"},{u:"https://ai-mindset-org.github.io/ainative-deck/intro-call.html",t:"intro call"},{u:"https://ai-mindset-org.github.io/ainative-deck/team-workshop.html",t:"team workshop"}]},
-
-// ── PRODUCTS ──
-{n:"Founder OS Landing",repo:"fos-landing",ds:"Landing page для Founder OS. Teal-grid design system, responsive.",
-cat:"product",cl:"#4dc9d4",gh:"https://github.com/ai-mindset-org/fos-landing",pub:1,ts:"2026-02-23",tg:["landing","FOS"]},
-
-{n:"POS Sprint Materials",repo:"pos-sprint",ds:"Материалы POS Sprint s1 (March 2–14). Блоки, задания, методология.",
-cat:"product",cl:"#3fb950",gh:"https://github.com/ai-mindset-org/pos-sprint",pub:1,ts:"2026-03-12",tg:["sprint","s1"]},
-
-// ── VISUAL ──
-{n:"Visual Toolkit",repo:"aim-visual-toolkit",ds:"Swiss Design visual metaphors для AI education.",
-cat:"visual",cl:"#d29922",gh:"https://github.com/ai-mindset-org/aim-visual-toolkit",pub:1,ts:"2026-02-09",tg:["swiss","metaphors"]},
-
-{n:"Block Type Generator",repo:"ai-mindset-block-type-generator",ds:"Brutalist block typography для brand identity.",
-cat:"visual",cl:"#f85149",gh:"https://github.com/ai-mindset-org/ai-mindset-block-type-generator",pub:1,ts:"2026-01-22",tg:["typography","brand"]},
-
-{n:"Brand Generator",repo:"aim-brand-generator",ds:"Visual Creator v5.5 — brand visuals, metaphors, backgrounds.",
-cat:"visual",cl:"#bc8cff",gh:"https://github.com/ai-mindset-org/aim-brand-generator",pub:0,ts:"2026-02-25",tg:["brand","generator"]},
-
-{n:"Instagram Carousels",repo:"aim-ig-carousels",ds:"7 стилей карусельных постов: brutalist, collage, editorial, ainative-teal, lab-x26.",
-cat:"visual",cl:"#f778ba",gh:"https://github.com/ai-mindset-org/aim-ig-carousels",pub:0,ts:"2026-03-18",tg:["instagram","styles"]},
-
-// ── INFRA ──
-{n:"AI Mindset LMS",repo:"aim-lms",ds:"Knowledge Base для Labs — React + Vite + TypeScript. Материалы, прогресс, чеклисты.",
-cat:"infra",cl:"#58a6ff",gh:"https://github.com/ai-mindset-org/aim-lms",pub:0,ts:"2026-03-27",tg:["LMS","React"],nw:1},
-
-{n:"AI Mindset Website",repo:"ai-mindset-website",ds:"Основной сайт aimindset.org.",
-cat:"infra",cl:"#4dc9d4",gh:"https://github.com/ai-mindset-org/ai-mindset-website",pub:0,ts:"2026-03-26",tg:["website"]},
-
-{n:"Linear Project Cloner",repo:"clone-templated-project",ds:"Копирование задач между проектами Linear с сохранением иерархии.",
-cat:"infra",cl:"#3fb950",gh:"https://github.com/ai-mindset-org/clone-templated-project",pub:0,ts:"2026-01-26",tg:["Linear","utility"]},
-];
-
-var CL={all:"all",workshop:"W1 workshop materials",rules:"rules & explorers",tools:"tools & builders",product:"products",visual:"visual tools",infra:"infrastructure"};
-var CD={workshop:"Материалы и инструменты из S2 W1 Personal OS Setup (24 мар)",rules:"Explorers стека, правил и скиллов",tools:"Builders и генераторы",product:"Лендинги и спринт-материалы",visual:"Визуальный контент и brand-инструменты",infra:"LMS, сайт, утилиты"};
-
-var at="all";
-
-function r(){
-  var lv=P.filter(function(p){return p.live});
-  var pb=P.filter(function(p){return p.pub});
-  var nw=P.filter(function(p){return p.nw});
-  document.getElementById("st").innerHTML='<div><span class="n">'+P.length+'</span> projects</div><div><span class="n">'+lv.length+'</span> live</div><div><span class="n">'+pb.length+'</span> public</div><div><span class="n">'+(P.length-pb.length)+'</span> private</div><div><span class="n">'+nw.length+'</span> new this week</div>';
-
-  var cc={};P.forEach(function(p){cc[p.cat]=(cc[p.cat]||0)+1});
-  var th='';
-  for(var k in CL){
-    var cnt=k==="all"?P.length:(cc[k]||0);
-    if(k!=="all"&&!cnt)continue;
-    th+='<div class="tab'+(at===k?' on':'')+'" onclick="sf(\''+k+'\')">'+CL[k]+'<span class="tc">'+cnt+'</span></div>';
-  }
-  document.getElementById("tb").innerHTML=th;
-
-  var fl=at==="all"?P:P.filter(function(p){return p.cat===at});
-  var gp={};fl.forEach(function(p){var c=CL[p.cat]||p.cat;if(!gp[c])gp[c]=[];gp[c].push(p)});
-
-  var h='';
-  for(var cat in gp){
-    var items=gp[cat];
-    var ck="";for(var kk in CL){if(CL[kk]===cat){ck=kk;break}}
-    var desc=CD[ck]||"";
-    if(Object.keys(gp).length>1)h+='<div class="sh">'+cat+(desc?' &mdash; <span style="text-transform:none;letter-spacing:0">'+desc+'</span>':'')+'</div>';
-    h+='<div class="gr">';
-    items.forEach(function(p){
-      var bd='';
-      if(p.live)bd+='<span class="bd bd-l">live</span>';
-      if(p.pub)bd+='<span class="bd bd-p">public</span>';
-      if(!p.pub)bd+='<span class="bd bd-x">private</span>';
-      if(p.nw)bd+='<span class="bd bd-n">new</span>';
-      if(p.ws)bd+='<span class="bd bd-w">'+p.ws+'</span>';
-
-      var lk='';
-      if(p.live)lk+='<a class="lnk pr" href="'+p.live+'" target="_blank" onclick="event.stopPropagation()">open</a>';
-      if(p.gh)lk+='<a class="lnk" href="'+p.gh+'" target="_blank" onclick="event.stopPropagation()">github</a>';
-      if(p.sub)p.sub.forEach(function(s){lk+='<a class="lnk" href="'+s.u+'" target="_blank" onclick="event.stopPropagation()">'+s.t+'</a>'});
-
-      h+='<a class="c" href="'+(p.live||p.gh||"#")+'" target="_blank"><div class="bar" style="background:'+p.cl+'"></div><div class="top"><div class="nm">'+p.n+'</div><div class="bg">'+bd+'</div></div><div class="ds">'+p.ds+'</div><div class="lk">'+lk+'</div><div class="dt">'+p.repo+' &middot; '+p.ts+'</div></a>';
-    });
-    h+='</div>';
-  }
-  document.getElementById("cnt").innerHTML=h;
-}
-
-function sf(f){at=f;r()}
-r();
-</script>
 </body>
 </html>
