@@ -417,5 +417,5 @@ When presenting your POS:
 ### AI Mindset
 
 - [Substack](https://aimindsetspace.substack.com/p/ai-mindset) — digest and methodology
-- [Knowledge Base](https://base.aimindset.org/?utm_source=website&utm_medium=article&utm_campaign=start&utm_content=github-pos-assessment) — reference materials and glossary
+- [Knowledge Base](https://base.aimindset.org/) — reference materials and glossary
 - [Instagram](https://www.instagram.com/ai_mind_set_/) — updates and sprint announcements
